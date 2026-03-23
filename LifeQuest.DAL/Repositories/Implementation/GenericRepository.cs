@@ -64,7 +64,11 @@ namespace LifeQuest.DAL.Repositories.Implementation
                     query = query.Include(include);
                 }
             }
-            IPagedList<T> paged = query.Where(predicate).ToPagedList(pageNumber, pageSize);
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+            IPagedList<T> paged = query.ToPagedList(pageNumber, pageSize);
             return Task.FromResult(paged);
         }
 
@@ -80,7 +84,12 @@ namespace LifeQuest.DAL.Repositories.Implementation
                 }
             }
 
-            return await query.Where(predicate).AsNoTracking().ToListAsync();
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.AsNoTracking().ToListAsync();
         }
 
         public async Task<T?> GetByIdAsync(int id)
@@ -109,7 +118,11 @@ namespace LifeQuest.DAL.Repositories.Implementation
                 }
             }
 
-            return await query.FirstOrDefaultAsync(predicate);
+            if (predicate != null)
+            {
+                return await query.FirstOrDefaultAsync(predicate);
+            }
+            return await query.FirstOrDefaultAsync();
         }
 
         public Task Update(T entity)
