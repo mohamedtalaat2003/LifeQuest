@@ -6,59 +6,92 @@
 <div class="container py-5">
     <div class="row g-4">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-4 p-5 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 p-5 mb-4 position-relative overflow-hidden">
+                <!-- Status Header -->
+                @{
+                    var statusText = "Pending Analysis";
+                    var statusBadge = "bg-warning text-dark";
+                    if (Model.IsSuccess == true) { statusText = "Outcome: Success"; statusBadge = "bg-success text-white"; }
+                    else if (Model.IsSuccess == false) { statusText = "Outcome: Failed"; statusBadge = "bg-danger text-white"; }
+                }
+                
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="fw-bold mb-0">@Model.Name</h2>
-                    <span class="badge @(Model.RiskLevel == "Hard" ? "bg-danger" : Model.RiskLevel == "Medium" ? "bg-warning" : "bg-success") rounded-pill px-4 py-2">
-                        @Model.RiskLevel Risk
+                    <h1 class="fw-bold mb-0">@Model.Name</h1>
+                    <span class="badge @statusBadge rounded-pill px-4 py-2 border shadow-sm">
+                        @statusText
                     </span>
                 </div>
                 
                 <div class="d-flex align-items-center mb-5">
-                    @if (Model.IsConfident)
+                    <span class="badge @(Model.RiskLevel == "Hard" ? "bg-danger" : Model.RiskLevel == "Medium" ? "bg-warning" : "bg-success") rounded-pill px-3 py-1 me-3">
+                        @Model.RiskLevel Risk Level
+                    </span>
+                    @if (Model.IsConfident == true)
                     {
-                        <div class="bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 me-3">
-                            <i class="fas fa-bolt me-1"></i> Highly Confident
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 me-3 border border-primary border-opacity-25">
+                            <i class="fas fa-bolt me-1"></i> Highly Confident Choice
                         </div>
                     }
-                    <div class="text-muted small">
-                        Logged on @DateTime.Now.ToShortDateString()
-                    </div>
                 </div>
 
                 <div class="row g-4 mb-5">
-                    <div class="col-md-3 text-center">
+                    <div class="col-md-3 text-center border-end">
                         <div class="h3 fw-bold text-dark mb-1">@(Model.Metrics?.SuccessRate ?? 0)%</div>
-                        <div class="small text-muted text-uppercase">Success Rate</div>
+                        <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Your Success Rate</div>
                     </div>
-                    <div class="col-md-3 text-center">
-                        <div class="h3 fw-bold text-primary mb-1">@(Model.Metrics?.ConfidenceAccuracy ?? 0)%</div>
-                        <div class="small text-muted text-uppercase">Confidence</div>
+                    <div class="col-md-3 text-center border-end">
+                        <div class="h3 fw-bold text-primary mb-1">@(Model.IsConfident == true ? "High" : "Low")</div>
+                        <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Self-Confidence</div>
                     </div>
-                    <div class="col-md-3 text-center">
+                    <div class="col-md-3 text-center border-end">
                         <div class="h3 fw-bold text-warning mb-1">@(Model.Metrics?.OverConfidenceIndex ?? 0)%</div>
-                        <div class="small text-muted text-uppercase">Over-Confidence</div>
+                        <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Confidence Error</div>
                     </div>
                     <div class="col-md-3 text-center">
                         <div class="h3 fw-bold text-info mb-1">@(Model.Metrics?.RiskPattern ?? 0)%</div>
-                        <div class="small text-muted text-uppercase">Risk Pattern</div>
+                        <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Risk Affinity</div>
                     </div>
                 </div>
 
                 <hr class="my-5 opacity-10">
 
-                <h5 class="fw-bold mb-4">Outcome Prediction</h5>
-                <p class="text-muted mb-5">
-                    Based on your previous decisions with a <strong>@Model.RiskLevel</strong> risk level, 
-                    your historical success rate is <strong>@(Model.Metrics?.SuccessRate ?? 0)%</strong>. 
-                </p>
+                @if (Model.IsSuccess == null)
+                {
+                    <div class="bg-light p-4 rounded-4 mb-5 border">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-question-circle text-primary me-2"></i> How did it go?</h5>
+                        <p class="text-muted mb-4">This decision is still pending. Once you know the outcome, resolve it below to improve your metrics.</p>
+                        <div class="d-flex gap-3">
+                            <form asp-action="UpdateResult" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <input type="hidden" name="isSuccess" value="true" />
+                                <button type="submit" class="btn btn-success rounded-pill px-5 shadow-sm">
+                                    <i class="fas fa-check me-2"></i> It Succeeded
+                                </button>
+                            </form>
+                            <form asp-action="UpdateResult" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <input type="hidden" name="isSuccess" value="false" />
+                                <button type="submit" class="btn btn-danger rounded-pill px-5 shadow-sm">
+                                    <i class="fas fa-times me-2"></i> It Failed
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-5">
+                        <h5 class="fw-bold mb-3">Retrospective Insight</h5>
+                        <p class="text-muted">
+                            You made this <strong>@Model.RiskLevel</strong> decision with <strong>@(Model.IsConfident == true ? "high" : "low")</strong> confidence.
+                            The result was a <strong>@(Model.IsSuccess == true ? "success" : "failure")</strong>.
+                        </p>
+                    </div>
+                }
 
                 <div class="d-flex gap-3">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill px-4 shadow">
-                        Update Final Result
-                    </a>
                     <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
-                        Back to Lab
+                        <i class="fas fa-arrow-left me-2"></i> Back to Lab
                     </a>
                 </div>
             </div>
@@ -66,22 +99,45 @@
 
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-dark text-white">
-                <h6 class="fw-bold text-uppercase small opacity-50 mb-4">AI Insight</h6>
-                @if ((Model.Metrics?.OverConfidenceIndex ?? 0) > 20)
+                <h6 class="fw-bold text-uppercase small opacity-50 mb-4">Predictive Analytics</h6>
+                @if (Model.IsSuccess == null)
                 {
-                    <p class="mb-0">
-                        <i class="fas fa-lightbulb text-warning me-2"></i>
-                        You tend to be over-confident in high-risk decisions. Consider gathering more data next time.
+                    <p class="mb-3">
+                        <i class="fas fa-brain text-info me-2"></i>
+                        Comparing this choice to your past <strong>@Model.RiskLevel</strong> risk decisions...
                     </p>
+                    <div class="p-3 bg-white bg-opacity-10 rounded-3 border border-white border-opacity-10">
+                        <div class="small">Statistically, someone with your pattern has a <strong>@(Model.Metrics?.SuccessRate ?? 0)%</strong> chance of success here.</div>
+                    </div>
                 }
                 else
                 {
-                    <p class="mb-0">
-                        <i class="fas fa-check-circle text-success me-2"></i>
-                        Your confidence levels are well-aligned with your success rates. Keep trusting your gut!
+                    <p class="mb-3">
+                        <i class="fas fa-history text-info me-2"></i>
+                        Post-Decision Impact:
                     </p>
+                    <div class="p-3 bg-white bg-opacity-10 rounded-3 border border-white border-opacity-10">
+                        <div class="small">
+                            @(Model.IsSuccess == true 
+                                ? "Excellent! This success reinforces your positive risk patterns." 
+                                : "A learning opportunity. Analyze why this didn't match your confidence level.")
+                        </div>
+                    </div>
                 }
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white">
+                <h6 class="fw-bold text-uppercase small opacity-50 mb-4">Action Plan</h6>
+                <ul class="list-unstyled mb-0 small">
+                    <li class="mb-2"><i class="fas fa-check-square me-2"></i> Review similar risk levels weekly.</li>
+                    <li class="mb-2"><i class="fas fa-check-square me-2"></i> Track your 'Unconfident' successes.</li>
+                    <li><i class="fas fa-check-square me-2"></i> Don't overthink Medium risks.</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .rounded-4 { border-radius: 1.25rem !important; }
+</style>

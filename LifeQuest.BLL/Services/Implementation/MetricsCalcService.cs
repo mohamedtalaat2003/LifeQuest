@@ -18,38 +18,40 @@ namespace LifeQuest.BLL.Services.Implementation
 
         public async Task<MetricsCalc> CalculateUserMetricsAsync(int userId, int decisionId)
         {
-            // هجيب كل القرارات اللى المستخدم عملها عشان نحللها
-            var decisions = await _unitOfWork.Repository<Decision>()
+            // هجيب كل القرارات اللى المستخدم عملها
+            var allDecisions = await _unitOfWork.Repository<Decision>()
                 .GetAllWithIncludesAsync(d => d.UserId == userId);
 
-            if (!decisions.Any())
+            // هنركز بس على القرارات اللى خلصت (يعنى نتيجتها مش null)
+            var resolvedDecisions = allDecisions.Where(d => d.IsSuccess.HasValue).ToList();
+
+            if (!resolvedDecisions.Any())
             {
                 return new MetricsCalc { DecisionId = decisionId };
             }
 
-            int totalDecisions = decisions.Count();
-            int successfulDecisions = decisions.Count(d => d.IsSuccess);
+            int totalResolved = resolvedDecisions.Count();
+            int successfulDecisions = resolvedDecisions.Count(d => d.IsSuccess == true);
             
-            // 1️⃣ نسبة النجاح العامة
-            int successRate = (int)((double)successfulDecisions / totalDecisions * 100);
+            // 1️⃣ Overall Success Rate (among resolved only)
+            int successRate = (int)((double)successfulDecisions / totalResolved * 100);
 
-            // 2️⃣ دقة الثقة (هل لما بيبقى واثق بيطلع صح فعلاً؟)
-            var confidentDecisions = decisions.Where(d => d.IsConfident);
+            // 2️⃣ Confidence Accuracy
+            var confidentDecisions = resolvedDecisions.Where(d => d.IsConfident == true);
             int confidenceAccuracy = 0;
             if (confidentDecisions.Any())
             {
-                int successfulConfident = confidentDecisions.Count(d => d.IsSuccess);
+                int successfulConfident = confidentDecisions.Count(d => d.IsSuccess == true);
                 confidenceAccuracy = (int)((double)successfulConfident / confidentDecisions.Count() * 100);
             }
 
-            // 3️⃣ مؤشر الثقة الزايدة (كام مرة كان واثق وفشل؟)
-            int failedConfident = confidentDecisions.Count(d => !d.IsSuccess);
-            int overConfidenceIndex = (int)((double)failedConfident / totalDecisions * 100);
+            // 3️⃣ Over-Confidence Index
+            int failedConfident = confidentDecisions.Count(d => d.IsSuccess == false);
+            int overConfidenceIndex = (int)((double)failedConfident / totalResolved * 100);
 
-            // 4️⃣ نمط المخاطرة
-            // هنا بنحسب هو بيختار قرارات صعبة (Hard) بنسبة قد إيه
-            int hardDecisions = decisions.Count(d => d.RiskLevel == "Hard");
-            int riskPattern = (int)((double)hardDecisions / totalDecisions * 100);
+            // 4️⃣ Risk Pattern
+            int hardDecisions = allDecisions.Count(d => d.RiskLevel == "Hard");
+            int riskPattern = (int)((double)hardDecisions / allDecisions.Count() * 100);
 
             return new MetricsCalc
             {

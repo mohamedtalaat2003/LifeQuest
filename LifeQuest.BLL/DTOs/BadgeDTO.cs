@@ -12,8 +12,8 @@ namespace LifeQuest.BLL.DTOs
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public int Point { get; set; }
-        public string image { get; set; } = string.Empty;
+        public int Points { get; set; }
+        public string Image { get; set; } = string.Empty;
 
         public int? RequiredLevelId { get; set; }
         public string RequiredLevelName { get; set; } = string.Empty;

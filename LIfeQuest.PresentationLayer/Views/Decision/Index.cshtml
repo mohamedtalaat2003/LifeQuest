@@ -6,7 +6,7 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h1 class="fw-bold mb-2">Decision Lab</h1>
+            <h1 class="fw-bold mb-2">Decision Lab <span class="badge bg-primary fs-6">v2.0</span></h1>
             <p class="text-muted">Analyze your choices and improve your judgment over time.</p>
         </div>
         <a asp-action="Create" class="btn btn-primary rounded-pill px-4 py-2 shadow">
@@ -21,50 +21,95 @@
             {
                 <div class="col-md-6 col-lg-4">
                     <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-hover">
+                        <!-- Top status bar -->
+                        @{
+                            var bgClass = "bg-primary";
+                            var statusText = "Pending";
+                            var statusBadge = "bg-warning text-dark";
+                            
+                            if (decision.IsSuccess == true) { 
+                                bgClass = "bg-success"; 
+                                statusText = "Success";
+                                statusBadge = "bg-success text-white";
+                            }
+                            else if (decision.IsSuccess == false) { 
+                                bgClass = "bg-danger"; 
+                                statusText = "Failed";
+                                statusBadge = "bg-danger text-white";
+                            }
+                        }
+                        <div style="height: 5px;" class="@bgClass"></div>
+
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge @(decision.RiskLevel == "Hard" ? "bg-danger" : decision.RiskLevel == "Medium" ? "bg-warning" : "bg-success") rounded-pill px-3">
+                                <span class="badge @statusBadge rounded-pill px-3">
+                                    <i class="fas @(decision.IsSuccess == null ? "fa-clock" : (decision.IsSuccess == true ? "fa-check-circle" : "fa-times-circle")) me-1"></i>
+                                    @statusText
+                                </span>
+                                <span class="badge bg-light text-dark border rounded-pill px-3">
                                     @decision.RiskLevel Risk
                                 </span>
-                                @if (decision.IsConfident)
-                                {
-                                    <span class="text-primary" title="Confident in this decision">
-                                        <i class="fas fa-bolt"></i>
-                                    </span>
-                                }
                             </div>
                             
                             <h5 class="fw-bold mb-3">@decision.Name</h5>
                             
                             <div class="row g-2 mb-4">
                                 <div class="col-6">
-                                    <div class="bg-light rounded-3 p-2 text-center">
-                                        <div class="small text-muted mb-1">Success Rate</div>
+                                    <div class="bg-light rounded-3 p-2 text-center border">
+                                        <div class="small text-muted mb-1 text-uppercase fw-bold" style="font-size: 0.65rem;">Success Rate</div>
                                         <div class="fw-bold text-dark">@(decision.Metrics?.SuccessRate ?? 0)%</div>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="bg-light rounded-3 p-2 text-center">
-                                        <div class="small text-muted mb-1">Confidence</div>
-                                        <div class="fw-bold text-dark">@(decision.Metrics?.ConfidenceAccuracy ?? 0)%</div>
+                                    <div class="bg-light rounded-3 p-2 text-center border">
+                                        <div class="small text-muted mb-1 text-uppercase fw-bold" style="font-size: 0.65rem;">Confidence</div>
+                                        <div class="fw-bold text-dark">@(decision.IsConfident == true ? "High" : "Low")</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center mt-auto">
-                                <a asp-action="Details" asp-route-id="@decision.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                                    View Analytics
+                            <div class="d-flex justify-content-between align-items-center mt-auto gap-2">
+                                <a asp-action="Details" asp-route-id="@decision.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3 flex-grow-1">
+                                    <i class="fas fa-chart-pie me-1"></i> Analytics
                                 </a>
-                                <div class="dropdown">
-                                    <button class="btn btn-link btn-sm text-muted" type="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
-                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@decision.Id">Update Result</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@decision.Id">Delete</a></li>
-                                    </ul>
-                                </div>
+                                
+                                @if (decision.IsSuccess == null)
+                                {
+                                    <div class="dropdown">
+                                        <button class="btn btn-warning btn-sm rounded-circle" type="button" data-bs-toggle="dropdown" title="Resolve Outcome">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                                            <li><h6 class="dropdown-header">Mark Result</h6></li>
+                                            <li>
+                                                <form asp-action="UpdateResult" method="post">
+                                                    <input type="hidden" name="id" value="@decision.Id" />
+                                                    <input type="hidden" name="isSuccess" value="true" />
+                                                    <button type="submit" class="dropdown-item text-success">
+                                                        <i class="fas fa-thumbs-up me-2"></i> Mark as Success
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form asp-action="UpdateResult" method="post">
+                                                    <input type="hidden" name="id" value="@decision.Id" />
+                                                    <input type="hidden" name="isSuccess" value="false" />
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="fas fa-thumbs-down me-2"></i> Mark as Failed
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-muted" asp-action="Delete" asp-route-id="@decision.Id"><i class="fas fa-trash-alt me-2"></i> Delete</a></li>
+                                        </ul>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-action="Delete" asp-route-id="@decision.Id" class="btn btn-light btn-sm rounded-circle text-muted">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                }
                             </div>
                         </div>
                     </div>
@@ -74,19 +119,19 @@
         else
         {
             <div class="col-12 text-center py-5">
-                <div class="opacity-25 mb-4">
+                <div class="opacity-25 mb-4 text-primary">
                     <i class="fas fa-balance-scale fa-5x"></i>
                 </div>
-                <h3>No decisions recorded yet.</h3>
+                <h3>Your decision lab is empty.</h3>
                 <p class="text-muted">Start tracking your big choices to see patterns in your success.</p>
-                <a asp-action="Create" class="btn btn-primary mt-3">Record Your First Decision</a>
+                <a asp-action="Create" class="btn btn-primary rounded-pill px-5 py-2 mt-3 shadow">Record Your First Decision</a>
             </div>
         }
     </div>
 </div>
 
 <style>
-    .card-hover { transition: all 0.3s ease; }
-    .card-hover:hover { transform: translateY(-10px); }
-    .card { border-top: 4px solid #4e73df !important; }
+    .card-hover { transition: all 0.3s cubic-bezier(.25,.8,.25,1); }
+    .card-hover:hover { transform: translateY(-7px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+    .rounded-4 { border-radius: 1rem !important; }
 </style>

@@ -90,7 +90,7 @@ namespace LifeQuest.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, bool isSuccess)
+        public async Task<IActionResult> UpdateResult(int id, bool isSuccess)
         {
             if (id <= 0) return BadRequest();
 
@@ -99,17 +99,19 @@ namespace LifeQuest.PL.Controllers
                 var result = await _decisionService.UpdateDecisionResultAsync(id, isSuccess);
                 if (!result)
                 {
-                    ModelState.AddModelError("", "Failed to update decision result");
-                    return View();
+                    TempData["ErrorMessage"] = "Failed to update decision result";
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = $"Decision marked as {(isSuccess ? "Success" : "Failed")}";
                 }
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                return View();
+                TempData["ErrorMessage"] = ex.Message;
             }
 
-            return RedirectToAction(nameof(Details), new { id });
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]

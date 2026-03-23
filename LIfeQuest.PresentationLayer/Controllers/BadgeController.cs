@@ -31,7 +31,7 @@ namespace LifeQuest.PL.Controllers
             if (!string.IsNullOrEmpty(userIdStr))
             {
                 var userBadges = await _userBadgeService.GetUserBadgesAsync(int.Parse(userIdStr));
-                ViewBag.UserBadgeIds = userBadges.Select(ub => ub.BadgeId).ToList();
+                ViewBag.UserBadgeIds = userBadges?.Select(ub => ub.BadgeId).ToList() ?? new List<int>();
             }
             else
             {

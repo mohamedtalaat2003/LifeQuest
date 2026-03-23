@@ -110,6 +110,13 @@ namespace LifeQuest.DAL.Migrations
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CriteriaType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CriteriaValue")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -128,10 +135,15 @@ namespace LifeQuest.DAL.Migrations
                     b.Property<int>("Points")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RequiredLevelId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdateAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RequiredLevelId");
 
                     b.ToTable("Badges");
                 });
@@ -280,13 +292,14 @@ namespace LifeQuest.DAL.Migrations
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsConfident")
+                    b.Property<bool?>("IsConfident")
+                        .IsRequired()
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsSuccess")
+                    b.Property<bool?>("IsSuccess")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -642,6 +655,15 @@ namespace LifeQuest.DAL.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("LifeQuest.DAL.Models.Badges", b =>
+                {
+                    b.HasOne("LifeQuest.DAL.Models.Level", "RequiredLevel")
+                        .WithMany()
+                        .HasForeignKey("RequiredLevelId");
+
+                    b.Navigation("RequiredLevel");
                 });
 
             modelBuilder.Entity("LifeQuest.DAL.Models.Challenge", b =>

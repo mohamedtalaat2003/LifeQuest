@@ -19,7 +19,7 @@
                 <div class="col-md-4 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4 @(isEarned ? "badge-earned" : "badge-locked")">
                         <div class="badge-icon-container mb-3 mx-auto @(isEarned ? "bg-warning bg-opacity-25" : "bg-light")">
-                            <i class="fas @(badge.image ?? "fa-medal") @(isEarned ? "text-warning" : "text-muted opacity-50")"></i>
+                            <i class="fas @(badge.Image ?? "fa-medal") @(isEarned ? "text-warning" : "text-muted opacity-50")"></i>
                         </div>
                         <h5 class="fw-bold mb-1">@badge.Name</h5>
                         <p class="small text-muted mb-3">@badge.Description</p>

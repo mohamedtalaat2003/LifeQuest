@@ -9,10 +9,9 @@ namespace LifeQuest.DAL.Models
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        public bool IsConfident { get; set; }
+        public bool? IsConfident { get; set; }
 
-        [Required]
-        public bool IsSuccess { get; set; }
+        public bool? IsSuccess { get; set; }
 
         public string RiskLevel { get; set; } = "Medium"; // Easy, Medium, Hard
 
