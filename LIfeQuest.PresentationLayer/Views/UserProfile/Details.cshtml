@@ -1,0 +1,132 @@
+@model LifeQuest.BLL.DTOs.UserProfileDTO
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5">
+    @if (Model == null)
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-user-slash fa-4x text-muted opacity-25 mb-3"></i>
+            <h4 class="text-muted">Profile not found.</h4>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- Profile Header -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="bg-primary bg-gradient p-5 text-white">
+                        <div class="d-flex align-items-center">
+                            <div class="me-4">
+                                @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                                {
+                                    <img src="@Model.ProfilePictureUrl" 
+                                         class="rounded-circle shadow" alt="Avatar" style="width: 100px; height: 100px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <img src="https://ui-avatars.com/api/?name=@(Uri.EscapeDataString(Model.UserName))&size=100&background=fff&color=4e73df&bold=true" 
+                                         class="rounded-circle shadow" alt="Avatar" style="width: 100px; height: 100px; object-fit: cover;">
+                                }
+                            </div>
+                            <div>
+                                <h2 class="fw-bold mb-1">@Model.UserName</h2>
+                                <p class="mb-0 opacity-75">@(Model.Bio ?? "No bio yet.")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center h-100">
+                    <i class="fas fa-crown fa-2x text-warning mb-2"></i>
+                    <h5 class="fw-bold mb-1 text-primary">@(Model.LevelNumber - 1)</h5>
+                    <p class="text-muted small mb-0 fw-bold">@Model.LevelName</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center h-100">
+                    <i class="fas fa-star fa-2x text-success mb-2"></i>
+                    <h5 class="fw-bold mb-1">@Model.TotalPoints</h5>
+                    <p class="text-muted small mb-0">Total Points</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center h-100">
+                    <i class="fas fa-percentage fa-2x text-info mb-2"></i>
+                    <h5 class="fw-bold mb-1">@Model.SuccessRate%</h5>
+                    <p class="text-muted small mb-0">Success Rate</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center h-100">
+                    <i class="fas fa-medal fa-2x text-danger mb-2"></i>
+                    <h5 class="fw-bold mb-1">@Model.TotalBadges</h5>
+                    <p class="text-muted small mb-0">Badges Earned</p>
+                </div>
+            </div>
+
+            <!-- Edit Bio -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Edit Profile</h5>
+                        <form asp-controller="UserProfile" asp-action="Update" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-muted small">Profile Picture</label>
+                                <input type="file" name="ProfileImage" accept="image/*" class="form-control border-0 bg-light rounded-3 p-2" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-muted small">Bio</label>
+                                <textarea name="Bio" class="form-control border-0 bg-light rounded-3 p-3" rows="4" 
+                                          placeholder="Share your goals, your journey, or your favorite quote...">@(Model.Bio == "No bio yet." ? "" : Model.Bio)</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4">Save Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level Progress -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-3">Level Progress</h5>
+                    <div class="progress rounded-pill mb-3" style="height: 14px;">
+                        @{
+                            int progress = 0;
+                            if (Model.TotalPoints > 0)
+                            {
+                                int nextLevelTotal = Model.TotalPoints + Model.RemainingPointsForNextLevel;
+                                if (nextLevelTotal > 0)
+                                    progress = (int)((double)Model.TotalPoints / nextLevelTotal * 100);
+                            }
+                        }
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width: @(progress)%"></div>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        @if (Model.RemainingPointsForNextLevel > 0)
+                        {
+                            <text>@Model.RemainingPointsForNextLevel points until your next level up!</text>
+                        }
+                        else
+                        {
+                            <text>You've reached the maximum level! 🎉</text>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .card { transition: transform 0.2s ease; }
+    .card:hover { transform: translateY(-3px); }
+</style>

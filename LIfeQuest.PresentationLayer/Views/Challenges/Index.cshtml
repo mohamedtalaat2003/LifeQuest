@@ -1,0 +1,68 @@
+@model IEnumerable<LifeQuest.PresentationLayer.ViewModels.Challenges.ChallengeViewModel>
+@{
+    ViewData["Title"] = "Challenges";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Explore Challenges</h1>
+    <a asp-action="Create" class="btn btn-primary shadow-sm">
+        <i class="fas fa-plus fa-sm text-white-50 me-2"></i> Create New
+    </a>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active fw-bold px-4" id="pills-my-tab" data-bs-toggle="pill" data-bs-target="#pills-my" type="button" role="tab">Active Challenges</button>
+  </li>
+</ul>
+
+<div class="tab-content" id="pills-tabContent">
+  <!-- My Challenges Tab -->
+  <div class="tab-pane fade show active" id="pills-my" role="tabpanel">
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-tasks fa-3x text-gray-300 mb-3"></i>
+                <p class="text-muted">No challenges found. Create one to get started!</p>
+                <a asp-action="Create" class="btn btn-primary">Create Your First Challenge</a>
+            </div>
+        }
+        else
+        {
+            @foreach (var challenge in Model)
+            {
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card h-100 border-start border-@(challenge.Difficulty == "Hard" ? "danger" : challenge.Difficulty == "Medium" ? "warning" : "success") border-5">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-primary fw-bold small"><i class="fas fa-trophy me-1"></i> @(challenge.IsPublic ? "Public" : "Private")</span>
+                                <span class="badge bg-@(challenge.Difficulty == "Hard" ? "danger" : challenge.Difficulty == "Medium" ? "warning" : "success")-subtle text-@(challenge.Difficulty == "Hard" ? "danger" : challenge.Difficulty == "Medium" ? "warning" : "success") border border-@(challenge.Difficulty == "Hard" ? "danger" : challenge.Difficulty == "Medium" ? "warning" : "success")">
+                                    @challenge.Difficulty
+                                </span>
+                            </div>
+                            <h5 class="fw-bold">@challenge.Title</h5>
+                            <p class="text-muted small">Points: <span class="fw-bold text-warning">@challenge.Points</span> | Duration: @challenge.Duration days</p>
+                            <p class="text-muted small">@challenge.Description</p>
+                            <div class="mt-4">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="small fw-bold">Timeline</span>
+                                    <span class="small">@challenge.StartDate.ToString("MMM dd") - @challenge.EndDate.ToString("MMM dd")</span>
+                                </div>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-primary" style="width: 100%"></div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a asp-action="Details" asp-route-id="@challenge.Id" class="btn btn-primary btn-sm flex-grow-1">View Details</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,120 @@
+@{
+    ViewData["Title"] = "Daily Check-in";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <a href="/Challenges/Details" class="btn btn-link text-decoration-none p-0 me-3"><i class="fas fa-arrow-left fa-lg"></i></a>
+            <h1 class="h3 mb-0 text-gray-800">Daily Progress Log</h1>
+        </div>
+
+        <!-- Challenge Info Card -->
+        <div class="card shadow mb-4 border-0">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="fw-bold mb-1">Learn .NET 10</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small text-muted">Current Progress: 65%</span>
+                            <span class="small fw-bold text-primary">Day 13 of 20</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check-in Form -->
+        <div class="card shadow mb-4 border-0">
+            <div class="card-header bg-white py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Log Your Activity</h6>
+            </div>
+            <div class="card-body">
+                <form>
+                    <!-- Question -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold d-block">Did you complete today's task?</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="completed" id="radioYes" value="yes" checked>
+                            <label class="form-check-label" for="radioYes">Yes, absolutely!</label>
+                        </div>
+                        <div class="form-check form-check-inline ms-3">
+                            <input class="form-check-input" type="radio" name="completed" id="radioNo" value="no">
+                            <label class="form-check-label" for="radioNo">No, skipped today</label>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <!-- Time Spent -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Time Spent (Minutes)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                <input type="number" class="form-control" placeholder="60">
+                            </div>
+                        </div>
+                        <!-- Date -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Date</label>
+                            <input type="text" class="form-control" value="March 05, 2026" disabled>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Observations & Notes</label>
+                        <textarea class="form-control" rows="3" placeholder="What did you learn today? Any obstacles?"></textarea>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-primary btn-lg shadow">
+                            <i class="fas fa-check-circle me-2"></i> Submit Check-in
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Check-in History -->
+        <div class="card shadow border-0 overflow-hidden">
+             <div class="card-header bg-white py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Log History</h6>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Date</th>
+                            <th>Status</th>
+                            <th>Time Spent</th>
+                            <th class="pe-4">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-4 small">Mar 04, 2026</td>
+                            <td><span class="badge bg-success-subtle text-success">Yes</span></td>
+                            <td>120m</td>
+                            <td class="small text-truncate pe-4" style="max-width: 200px;">Worked on Dependency Injection improvements.</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-4 small">Mar 03, 2026</td>
+                            <td><span class="badge bg-success-subtle text-success">Yes</span></td>
+                            <td>90m</td>
+                            <td class="small text-truncate pe-4" style="max-width: 200px;">Deep dive into C# 14 records.</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-4 small">Mar 02, 2026</td>
+                            <td><span class="badge bg-danger-subtle text-danger">No</span></td>
+                            <td>0m</td>
+                            <td class="small text-truncate pe-4" style="max-width: 200px;">Internal meeting, no time.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

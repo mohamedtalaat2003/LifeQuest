@@ -1,0 +1,126 @@
+@{
+    ViewData["Title"] = "Join Challenge";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <!-- Breadcrumb / Back Navigation -->
+        <div class="d-flex align-items-center mb-4">
+            <a href="/Challenges/Index" class="btn btn-link text-decoration-none p-0 me-3"><i class="fas fa-arrow-left fa-lg"></i></a>
+            <h1 class="h3 mb-0 text-gray-800">Review Quest</h1>
+        </div>
+
+        <!-- Challenge Header -->
+        <div class="card shadow mb-4 border-0 overflow-hidden">
+            <div class="bg-primary p-4 text-white">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="fw-bold mb-1">Mastering Modern Typography</h2>
+                        <p class="mb-0 opacity-75">By <span class="fw-bold">DesignGuru_99</span></p>
+                    </div>
+                    <span class="badge bg-warning text-dark px-3 py-2 fw-bold">Medium</span>
+                </div>
+                <div class="mt-3 d-flex gap-4">
+                    <span><i class="fas fa-calendar-check me-2"></i>30 Days</span>
+                    <span><i class="fas fa-folder me-2"></i>Art & Design</span>
+                    <span><i class="fas fa-users me-2"></i>1,240 Registered</span>
+                </div>
+            </div>
+            
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-primary mb-3">About this Quest</h5>
+                <p class="text-muted leading-relaxed">
+                    Typography is the art and technique of arranging type to make written language legible, readable and appealing when displayed. In this 30-day challenge, we will dive deep into font pairing, hierarchy, whitespace, and the psychology of type systems in modern web interfaces.
+                </p>
+                <p class="text-muted mb-0">
+                    Perfect for UI designers looking to level up their visual communication skills.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Stats Section -->
+            <div class="col-md-7">
+                <div class="card shadow mb-4 border-0">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Quest Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center mb-2">
+                            <div class="col-4">
+                                <i class="fas fa-user-friends fa-2x text-info mb-2"></i>
+                                <div class="h5 mb-0 fw-bold">1.2k</div>
+                                <div class="text-muted xsmall">Participants</div>
+                            </div>
+                            <div class="col-4 border-start border-end">
+                                <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                                <div class="h5 mb-0 fw-bold">78%</div>
+                                <div class="text-muted xsmall">Completion</div>
+                            </div>
+                            <div class="col-4">
+                                <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                                <div class="h5 mb-0 fw-bold">4.9</div>
+                                <div class="text-muted xsmall">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rewards Section -->
+                <div class="card shadow mb-4 border-0 bg-light">
+                    <div class="card-body p-4">
+                        <h6 class="font-weight-bold text-primary mb-3">Potential Rewards</h6>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-coins text-warning fa-2x me-3"></i>
+                            <div>
+                                <div class="fw-bold">750 XP Points</div>
+                                <div class="text-muted small">Instant level-up progress.</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-medal text-info fa-2x me-3"></i>
+                            <div>
+                                <div class="fw-bold">"Type Master" Badge</div>
+                                <div class="text-muted small">Exclusively for quest finishers.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Join Section -->
+            <div class="col-md-5">
+                <div class="card shadow border-0 text-center py-5 h-100 bg-white">
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <i class="fas fa-flag-checkered text-primary mb-4" style="font-size: 4rem;"></i>
+                        <h4 class="fw-bold mb-3">Commit to the Quest?</h4>
+                        <p class="text-muted small mb-4 px-3">Joining will add this quest to your active dashboard. You can track progress daily.</p>
+                        <div class="px-4">
+                            <button id="btnJoin" class="btn btn-primary btn-lg w-100 shadow-sm py-3 mb-3">
+                                <i class="fas fa-play-circle me-2"></i> Join Challenge
+                            </button>
+                            <p class="text-muted xsmall mb-0">By joining, you agree to the community guidelines and daily check-in rules.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('btnJoin')?.addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Joining...';
+            
+            setTimeout(() => {
+                this.className = 'btn btn-success btn-lg w-100 shadow-sm py-3 mb-3';
+                this.innerHTML = '<i class="fas fa-check-circle me-2"></i> Quest Joined!';
+                
+                // Optional: Redirect after success
+                // window.location.href = '/Challenges/Details';
+            }, 1500);
+        });
+    </script>
+}

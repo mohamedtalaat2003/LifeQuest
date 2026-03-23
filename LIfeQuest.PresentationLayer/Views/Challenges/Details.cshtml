@@ -1,0 +1,127 @@
+@model LifeQuest.BLL.DTOs.ChallengeDTO
+@{
+    ViewData["Title"] = Model.Title;
+    bool isJoined = ViewBag.IsJoined ?? false;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Challenges</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Challenge Details -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+                <div class="card-body p-5">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <span class="badge bg-primary-soft text-primary rounded-pill px-3 mb-2">@Model.CategoryName</span>
+                            <h1 class="display-5 fw-bold mb-0">@Model.Title</h1>
+                        </div>
+                        <div class="text-end">
+                            <div class="h4 fw-bold text-success mb-0">+@Model.Points XP</div>
+                            <small class="text-muted">Reward Points</small>
+                        </div>
+                    </div>
+
+                    <p class="lead text-muted mb-5">@Model.Description</p>
+
+                    <div class="row g-4 mb-5">
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-4 text-center">
+                                <div class="small text-muted mb-1">Difficulty</div>
+                                <div class="fw-bold">@Model.Difficulty</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-4 text-center">
+                                <div class="small text-muted mb-1">Duration</div>
+                                <div class="fw-bold">@Model.Duration Days</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-4 text-center">
+                                <div class="small text-muted mb-1">Start Date</div>
+                                <div class="fw-bold">@Model.StartDate.ToString("MMM dd")</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-4 text-center">
+                                <div class="small text-muted mb-1">Visibility</div>
+                                <div class="fw-bold">@(Model.IsPublic ? "Public" : "Private")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-5 opacity-25">
+
+                    <div class="d-flex gap-3">
+                        @if (isJoined)
+                        {
+                            <button class="btn btn-success btn-lg px-5 rounded-pill shadow-sm" disabled>
+                                <i class="fas fa-check-circle me-2"></i>You've Joined!
+                            </button>
+                            <a asp-controller="DailyLog" asp-action="Index" class="btn btn-outline-primary btn-lg px-5 rounded-pill">
+                                Log Progress
+                            </a>
+                        }
+                        else
+                        {
+                            <form asp-action="Join" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                                    Join This Quest
+                                </button>
+                            </form>
+                            <a asp-action="Index" class="btn btn-light btn-lg px-5 rounded-pill">Back to List</a>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rules/Tips Placeholder -->
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Tips for Success</h5>
+                <ul class="text-muted mb-0">
+                    <li class="mb-2">Consistency is key. Try to log your activity at the same time every day.</li>
+                    <li class="mb-2">Don't be discouraged by missed days. Just pick up where you left off.</li>
+                    <li>Share your progress with the community to stay motivated!</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sidebar / Stats -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 p-4 mb-4 text-center bg-primary text-white">
+                <h6 class="text-uppercase small fw-bold mb-3 opacity-75">Potential Earnings</h6>
+                <div class="display-4 fw-bold mb-2">@Model.Points</div>
+                <p class="mb-0 small opacity-75">XP towards your next level up!</p>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h6 class="fw-bold mb-0">Questers Stats</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            <i class="fas fa-users-cog fa-2x text-muted opacity-25"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">Active Participants</div>
+                            <div class="small text-muted">Calculating...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-primary-soft { background-color: rgba(13, 110, 253, 0.1); }
+</style>

@@ -1,0 +1,122 @@
+@model LifeQuest.BLL.DTOs.UserProfileDTO
+@{
+    ViewData["Title"] = "Growth Analytics";
+}
+
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold mb-2">Personal Growth Analytics</h1>
+            <p class="text-muted">Visualizing your journey towards a better self.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Main Progress Chart Placeholder -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4 p-5 h-100">
+                <h5 class="fw-bold mb-4">Points Progression (Last 7 Days)</h5>
+                <div class="chart-container" style="position: relative; height:300px; width:100%">
+                    <canvas id="pointsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Statistics -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
+                <h6 class="fw-bold text-muted small text-uppercase mb-3">Quest Success Rate</h6>
+                <div class="d-flex align-items-center">
+                    <div class="display-3 fw-bold me-3">@(Model?.SuccessRate ?? 0)%</div>
+                    <div class="flex-grow-1">
+                        <div class="progress rounded-pill" style="height: 10px;">
+                            <div class="progress-bar bg-warning" style="width: @(Model?.SuccessRate ?? 0)%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 p-4 text-center bg-dark text-white">
+                <h6 class="text-uppercase small fw-bold mb-3 opacity-50">Total Lifetime Points</h6>
+                <div class="display-5 fw-bold text-warning mb-2">@string.Format("{0:n0}", Model?.TotalPoints ?? 0)</div>
+                <p class="small mb-0 opacity-50">Level: @(Model?.LevelName ?? "Novice")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="h3 fw-bold text-primary mb-1">@(Model?.ActiveChallenges ?? 0)</div>
+                <div class="small text-muted">Current Quests</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="h3 fw-bold text-success mb-1">@(Model?.TotalBadges ?? 0)</div>
+                <div class="small text-muted">Medals Earned</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="h3 fw-bold text-info mb-1">@(Model?.RemainingPointsForNextLevel ?? 0)</div>
+                <div class="small text-muted">Points to Level Up</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="h3 fw-bold text-warning mb-1">@(ViewBag.CurrentStreak ?? 0)</div>
+                <div class="small text-muted">Current Streak</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById('pointsChart').getContext('2d');
+            
+            var gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(78, 115, 223, 0.5)');
+            gradient.addColorStop(1, 'rgba(78, 115, 223, 0.0)');
+
+            var labels = @Html.Raw(Json.Serialize(ViewBag.ChartLabels));
+            var data = @Html.Raw(Json.Serialize(ViewBag.ChartData));
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Points Earned',
+                        data: data,
+                        backgroundColor: gradient,
+                        borderColor: '#4e73df',
+                        pointBackgroundColor: '#4e73df',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#4e73df',
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, grid: { borderDash: [2, 4], color: '#e3e6f0' } }
+                    }
+                }
+            });
+        });
+    </script>
+}

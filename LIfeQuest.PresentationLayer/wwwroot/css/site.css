@@ -1,0 +1,313 @@
+/* Life Quest Custom Gamified Theme */
+:root {
+    --primary-color: #4e73df;
+    --secondary-color: #858796;
+    --success-color: #1cc88a;
+    --info-color: #36b9cc;
+    --warning-color: #f6c23e;
+    --danger-color: #e74a3b;
+    --light-bg: #f8f9fc;
+    --sidebar-width: 250px;
+    --navbar-height: 70px;
+    --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+body {
+    background-color: var(--light-bg);
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Layout Wrapper */
+#wrapper {
+    display: flex;
+    width: 100%;
+}
+
+/* Sidebar */
+#sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    background: white;
+    box-shadow: 0.15rem 0 1.75rem 0 rgba(58, 59, 69, 0.1);
+    z-index: 1000;
+    transition: all 0.3s;
+}
+
+#sidebar .sidebar-brand {
+    height: var(--navbar-height);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+#sidebar .nav-link {
+    padding: 1rem 1.5rem;
+    color: var(--secondary-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    border-left: 4px solid transparent;
+}
+
+#sidebar .nav-link i {
+    width: 20px;
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+}
+
+#sidebar .nav-link:hover,
+#sidebar .nav-link.active {
+    color: var(--primary-color);
+    background-color: rgba(78, 115, 223, 0.05);
+    border-left-color: var(--primary-color);
+}
+
+/* Navbar */
+.top-navbar {
+    height: var(--navbar-height);
+    background: white;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    width: 100%;
+}
+
+/* Main Content Area */
+#content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+/* Gamified Components */
+.card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: white;
+    border-bottom: 1px solid #e3e6f0;
+    font-weight: 700;
+    color: var(--primary-color);
+    padding: 1rem 1.25rem;
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+}
+
+.progress {
+    height: 0.75rem;
+    border-radius: 1rem;
+    background-color: #eaecf4;
+}
+
+.progress-bar {
+    border-radius: 1rem;
+}
+
+.level-badge {
+    background: linear-gradient(135deg, var(--info-color), var(--primary-color));
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-weight: 800;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.points-indicator {
+    color: var(--warning-color);
+    font-weight: 800;
+}
+
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e3e6f0;
+}
+
+.difficulty-easy {
+    color: var(--success-color);
+}
+
+.difficulty-medium {
+    color: var(--warning-color);
+}
+
+.difficulty-hard {
+    color: var(--danger-color);
+}
+
+/* Landing Page Specific Styles */
+.landing-navbar {
+    padding: 1rem 2rem;
+    transition: all 0.3s;
+    background: white;
+}
+
+.hero-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f8f9fc 0%, #eef2f7 100%);
+    overflow: hidden;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #2e3b4e;
+    line-height: 1.2;
+}
+
+.feature-card {
+    transition: all 0.3s;
+    border: 1px solid #e3e6f0;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin: 0 auto 1rem;
+}
+
+.cta-section {
+    background: var(--primary-color);
+    color: white;
+    padding: 80px 0;
+}
+
+.footer-landing {
+    background: #f8f9fc;
+    padding: 60px 0 20px;
+    border-top: 1px solid #e3e6f0;
+}
+
+/* Authentication Styles */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9fc 0%, #eef2f7 100%);
+    padding: 2rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    border: none;
+    border-radius: 1.5rem;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 2.5rem;
+}
+
+.auth-brand {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.auth-form .form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e3e6f0;
+    background-color: #f8f9fc;
+}
+
+.auth-form .form-control:focus {
+    background-color: white;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.1);
+}
+
+.social-auth-btn {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.75rem;
+    padding: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    background: white;
+    width: 100%;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.social-auth-btn:hover {
+    background: #f8f9fc;
+    color: var(--primary-color);
+}
+
+.badge-item {
+    text-align: center;
+    padding: 1rem;
+}
+
+.badge-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: calc(-1 * var(--sidebar-width));
+    }
+
+    #sidebar.active {
+        margin-left: 0;
+    }
+}

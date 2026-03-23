@@ -1,0 +1,97 @@
+@model IEnumerable<LifeQuest.BLL.DTOs.DailyLogDTO>
+@{
+    ViewData["Title"] = "Daily Log";
+    var activeChallenges = ViewBag.ActiveChallenges as List<LifeQuest.BLL.DTOs.UserChallengeDTO>;
+    int streak = ViewBag.Streak ?? 0;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Daily Activity Log</h2>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus me-2"></i>Log New Activity
+        </a>
+    </div>
+
+    <!-- Streak Card -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="mb-2">
+                    <i class="fas fa-fire fa-3x text-warning"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@streak Day@(streak != 1 ? "s" : "")</h3>
+                <p class="text-muted small mb-0">Current Streak</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="mb-2">
+                    <i class="fas fa-clipboard-check fa-3x text-success"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count() ?? 0)</h3>
+                <p class="text-muted small mb-0">Logs Today</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="mb-2">
+                    <i class="fas fa-running fa-3x text-primary"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(activeChallenges?.Count ?? 0)</h3>
+                <p class="text-muted small mb-0">Active Challenges</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Logs -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pt-4 px-4">
+            <h5 class="fw-bold mb-0">Today's Activity — @DateTime.Now.ToString("MMMM dd, yyyy")</h5>
+        </div>
+        <div class="card-body p-4">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Challenge</th>
+                                <th>Duration</th>
+                                <th>Points</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@log.ChallengeName</td>
+                                    <td>@log.Duration min</td>
+                                    <td><span class="badge bg-success">+@log.Points XP</span></td>
+                                    <td class="text-muted small">@(string.IsNullOrEmpty(log.Notes) ? "—" : log.Notes)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="opacity-25 mb-3">
+                        <i class="fas fa-clipboard fa-4x"></i>
+                    </div>
+                    <h5 class="text-muted">No logs for today yet.</h5>
+                    <p class="text-muted small">Record your first activity to keep your streak alive!</p>
+                    <a asp-action="Create" class="btn btn-primary mt-2">Log Activity Now</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .card { transition: transform 0.2s ease; }
+    .card:hover { transform: translateY(-3px); }
+</style>

@@ -1,0 +1,177 @@
+@model LifeQuest.BLL.DTOs.UserProfileDTO
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <!-- User Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="bg-primary bg-gradient p-5 text-white position-relative">
+                    <div class="position-absolute top-0 end-0 p-4 opacity-25">
+                        <i class="fas fa-rocket fa-6x"></i>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-lg bg-white rounded-circle p-1 me-4 shadow d-flex align-items-center justify-content-center overflow-hidden">
+                            @if (!string.IsNullOrEmpty(Model?.ProfilePictureUrl))
+                            {
+                                <img src="@Model.ProfilePictureUrl" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Avatar">
+                            }
+                            else
+                            {
+                                <img src="https://ui-avatars.com/api/?name=@(Model?.UserName ?? "User")&background=random" class="rounded-circle w-100 h-100" style="object-fit: contain;" alt="Avatar">
+                            }
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-1">Welcome back, @(Model?.UserName ?? "Hero")!</h2>
+                            <p class="mb-0 opacity-75">Your daily quest awaits. Let's make today count.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 p-4 h-100 text-center">
+                <div class="stats-icon bg-primary bg-opacity-10 text-primary mb-3 mx-auto">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h6 class="text-muted small text-uppercase fw-bold mb-1">Current Level</h6>
+                <h3 class="fw-bold mb-0 text-primary">@(Model?.LevelNumber - 1 ?? 0)</h3>
+                <p class="text-muted small mb-0 fw-bold">@(Model?.LevelName ?? "Novice")</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 p-4 h-100 text-center">
+                <div class="stats-icon bg-success bg-opacity-10 text-success mb-3 mx-auto">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h6 class="text-muted small text-uppercase fw-bold mb-1">Total Points</h6>
+                <h3 class="fw-bold mb-0">@(Model?.TotalPoints ?? 0)</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 p-4 h-100 text-center">
+                <div class="stats-icon bg-warning bg-opacity-10 text-warning mb-3 mx-auto">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <h6 class="text-muted small text-uppercase fw-bold mb-1">Success Rate</h6>
+                <h3 class="fw-bold mb-0">@(Model?.SuccessRate ?? 0)%</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 p-4 h-100 text-center">
+                <div class="stats-icon bg-info bg-opacity-10 text-info mb-3 mx-auto">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <h6 class="text-muted small text-uppercase fw-bold mb-1">Badges</h6>
+                <h3 class="fw-bold mb-0">@(Model?.TotalBadges ?? 0)</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Active Challenges -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Active Challenges</h5>
+                    <a asp-controller="Challenges" asp-action="Index" class="btn btn-link btn-sm text-decoration-none fw-bold">View All</a>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model?.ActiveChallenges > 0)
+                    {
+                        <div class="alert alert-info border-0 rounded-4 p-4">
+                            <div class="d-flex">
+                                <i class="fas fa-info-circle fs-4 me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-1">You have @Model.ActiveChallenges active challenges!</h6>
+                                    <p class="small mb-0 opacity-75">Click below to track your progress and log today's activities.</p>
+                                    <a asp-controller="DailyLog" asp-action="Index" class="btn btn-primary btn-sm mt-3 px-4 shadow-sm">Go to Daily Log</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <div class="mb-3 opacity-25">
+                                <i class="fas fa-clipboard-list fa-4x"></i>
+                            </div>
+                            <h5 class="text-muted">No active challenges.</h5>
+                            <p class="text-muted small">Start a new quest to begin your transformation!</p>
+                            <a asp-controller="Challenges" asp-action="Index" class="btn btn-outline-primary mt-2">Explore Challenges</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Level Progress & Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">Leveling Up</h6>
+                    <div class="progress rounded-pill mb-3" style="height: 12px;">
+                        @{
+                            int progress = 0;
+                            if (Model != null && Model.TotalPoints > 0)
+                            {
+                                int nextLevelTotal = Model.TotalPoints + Model.RemainingPointsForNextLevel;
+                                if (nextLevelTotal > 0)
+                                    progress = (int)((double)Model.TotalPoints / nextLevelTotal * 100);
+                            }
+                        }
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width: @(progress)%"></div>
+                    </div>
+                    <p class="small text-muted mb-0">@(Model?.RemainingPointsForNextLevel ?? 0) points until your next rank.</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h6 class="fw-bold mb-0">Quick Actions</h6>
+                </div>
+                <div class="card-body p-4 pt-2">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="DailyLog" asp-action="Create" class="btn btn-light text-start p-3 rounded-4 border-0 mb-1">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 text-success p-2 rounded-3 me-3">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <span class="fw-bold">Log Today's Activity</span>
+                            </div>
+                        </a>
+                        <a asp-controller="Challenges" asp-action="Create" class="btn btn-light text-start p-3 rounded-4 border-0">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 me-3">
+                                    <i class="fas fa-flag"></i>
+                                </div>
+                                <span class="fw-bold">Create Challenge</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-lg { width: 100px; height: 100px; }
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.5rem;
+    }
+    .card { transition: transform 0.2s ease; }
+    .card:hover { transform: translateY(-5px); }
+</style>
