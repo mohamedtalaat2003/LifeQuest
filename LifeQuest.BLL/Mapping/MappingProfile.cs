@@ -41,9 +41,11 @@ namespace LifeQuest.BLL.Mapping
                 .ForMember(dest => dest.User, opt => opt.Ignore());
 
             // Badge Mappings
-            CreateMap<Badges, BadgeDTO>();
+            CreateMap<Badges, BadgeDTO>()
+                .ForMember(dest => dest.RequiredLevelName, opt => opt.MapFrom(src => src.RequiredLevel != null ? src.RequiredLevel.LevelName : string.Empty));
             CreateMap<BadgeDTO, Badges>()
-                .ForMember(dest => dest.UserBadges, opt => opt.Ignore());
+                .ForMember(dest => dest.UserBadges, opt => opt.Ignore())
+                .ForMember(dest => dest.RequiredLevel, opt => opt.Ignore());
 
             // Level Mappings
             CreateMap<Level, LevelDTO>();

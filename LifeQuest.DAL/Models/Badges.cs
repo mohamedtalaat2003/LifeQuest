@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LifeQuest.DAL.Models
 {
@@ -13,6 +14,18 @@ namespace LifeQuest.DAL.Models
         public int Points { get; set; }
 
         public string Image { get; set; } = string.Empty;
+
+        // The level required to unlock this badge (nullable for non-level badges)
+        [ForeignKey("RequiredLevel")]
+        public int? RequiredLevelId { get; set; }
+        public Level? RequiredLevel { get; set; }
+
+        // Criteria type: "Level", "ChallengeCount", "Streak"
+        public string CriteriaType { get; set; } = "Level";
+
+        // The count needed for ChallengeCount or Streak criteria
+        public int CriteriaValue { get; set; }
+
         public HashSet<UserBadge> UserBadges { get; set; } = new();
     }
 }

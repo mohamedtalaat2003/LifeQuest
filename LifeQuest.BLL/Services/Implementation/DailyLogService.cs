@@ -80,6 +80,9 @@ namespace LifeQuest.BLL.Services.Implementation
             {
                 userChallenge.Status = "Ended";
                 userChallenge.IsSuccess = true;
+                
+                // تحديث نسبة النجاح لليوزر بعد ما خلص التحدى بنجاح
+                await _userProfileService.UpdateSuccessRateAsync(userId);
             }
 
             await _unitOfWork.Repository<UserChallenge>().Update(userChallenge);
@@ -104,8 +107,12 @@ namespace LifeQuest.BLL.Services.Implementation
                 throw new Exception("The User Is Not Registered in this Challenge!");
             }
 
-            // هنا هيحسب نسبة التقدم بناء على التقدم الى المستخدم واقف عنده من المده الكليه للتحدى
+            if (userChallenge.Challenge == null)
+            {
+                throw new Exception("Challenge details not found!");
+            }
 
+            // هنا هيحسب نسبة التقدم بناء على التقدم الى المستخدم واقف عنده من المده الكليه للتحدى
             double progress = ((double)userChallenge.CurrentProgress / userChallenge.Challenge.Duration) * 100;
 
             return Math.Round(progress,2);
@@ -115,7 +122,9 @@ namespace LifeQuest.BLL.Services.Implementation
         {
             // هنا هجيب كل التسجيلات المرتطبطه بالمستخدم فى يوم او تاريخ معين 
             var Logs =await _unitOfWork.Repository<DailyLog>()
-                .GetPagedAsync(1,5,X => X.UserChallenge.UserId == userId && X.LogDate.Date == date.Date, "UserChallenge.Challenge");
+                .GetPagedAsync(1,5,X => X.UserChallenge != null && X.UserChallenge.UserId == userId && X.LogDate.Date == date.Date, "UserChallenge.Challenge");
+
+            if (Logs == null) return Enumerable.Empty<DailyLogDTO>();
 
             var logsDTO = _mapper.Map<IEnumerable<DailyLogDTO>>(Logs);
 
@@ -125,9 +134,9 @@ namespace LifeQuest.BLL.Services.Implementation
         public async Task<int> GetUserSteakAsync(int userId)
         {
             var logs = await _unitOfWork.Repository<DailyLog>()
-                .GetAllWithIncludesAsync(l => l.UserChallenge.UserId == userId, "UserChallenge");
+                .GetAllWithIncludesAsync(l => l.UserChallenge != null && l.UserChallenge.UserId == userId, "UserChallenge");
 
-            if (!logs.Any()) return 0;
+            if (logs == null || !logs.Any()) return 0;
 
             var distinctDates = logs
                 .Select(l => l.LogDate.Date)

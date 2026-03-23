@@ -1,0 +1,87 @@
+@model LifeQuest.BLL.DTOs.DecisionDTO
+@{
+    ViewData["Title"] = "Decision Analytics";
+}
+
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-5 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold mb-0">@Model.Name</h2>
+                    <span class="badge @(Model.RiskLevel == "Hard" ? "bg-danger" : Model.RiskLevel == "Medium" ? "bg-warning" : "bg-success") rounded-pill px-4 py-2">
+                        @Model.RiskLevel Risk
+                    </span>
+                </div>
+                
+                <div class="d-flex align-items-center mb-5">
+                    @if (Model.IsConfident)
+                    {
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 me-3">
+                            <i class="fas fa-bolt me-1"></i> Highly Confident
+                        </div>
+                    }
+                    <div class="text-muted small">
+                        Logged on @DateTime.Now.ToShortDateString()
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3 text-center">
+                        <div class="h3 fw-bold text-dark mb-1">@(Model.Metrics?.SuccessRate ?? 0)%</div>
+                        <div class="small text-muted text-uppercase">Success Rate</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="h3 fw-bold text-primary mb-1">@(Model.Metrics?.ConfidenceAccuracy ?? 0)%</div>
+                        <div class="small text-muted text-uppercase">Confidence</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="h3 fw-bold text-warning mb-1">@(Model.Metrics?.OverConfidenceIndex ?? 0)%</div>
+                        <div class="small text-muted text-uppercase">Over-Confidence</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="h3 fw-bold text-info mb-1">@(Model.Metrics?.RiskPattern ?? 0)%</div>
+                        <div class="small text-muted text-uppercase">Risk Pattern</div>
+                    </div>
+                </div>
+
+                <hr class="my-5 opacity-10">
+
+                <h5 class="fw-bold mb-4">Outcome Prediction</h5>
+                <p class="text-muted mb-5">
+                    Based on your previous decisions with a <strong>@Model.RiskLevel</strong> risk level, 
+                    your historical success rate is <strong>@(Model.Metrics?.SuccessRate ?? 0)%</strong>. 
+                </p>
+
+                <div class="d-flex gap-3">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill px-4 shadow">
+                        Update Final Result
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                        Back to Lab
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-dark text-white">
+                <h6 class="fw-bold text-uppercase small opacity-50 mb-4">AI Insight</h6>
+                @if ((Model.Metrics?.OverConfidenceIndex ?? 0) > 20)
+                {
+                    <p class="mb-0">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        You tend to be over-confident in high-risk decisions. Consider gathering more data next time.
+                    </p>
+                }
+                else
+                {
+                    <p class="mb-0">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Your confidence levels are well-aligned with your success rates. Keep trusting your gut!
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

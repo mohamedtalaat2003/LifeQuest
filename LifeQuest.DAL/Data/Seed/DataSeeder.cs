@@ -29,19 +29,7 @@ namespace LifeQuest.DAL.Data.Seed
             }
             int heroId = heroUser?.Id ?? 0;
 
-            // Seed Badges
-            if (!await context.Badges.AnyAsync())
-            {
-                var badges = new List<Badges>
-                {
-                    new Badges { Name = "First Step", Description = "Complete your first challenge", Points = 100, Image = "fa-shoe-prints" },
-                    new Badges { Name = "Consistency King", Description = "Log activities for 7 consecutive days", Points = 500, Image = "fa-crown" },
-                    new Badges { Name = "Quest Master", Description = "Complete 10 challenges", Points = 1000, Image = "fa-trophy" }
-                };
-                await context.Badges.AddRangeAsync(badges);
-            }
-
-            // Seed Levels
+            // Seed Levels first (badges need level IDs)
             if (!await context.Levels.AnyAsync())
             {
                 var levels = new List<Level>
@@ -52,6 +40,36 @@ namespace LifeQuest.DAL.Data.Seed
                     new Level { LevelName = "Legend", Point = 5000, LevelsCount = 4 }
                 };
                 await context.Levels.AddRangeAsync(levels);
+                await context.SaveChangesAsync(); // Save levels first to get IDs
+            }
+
+            // Seed Badges
+            if (!await context.Badges.AnyAsync())
+            {
+                var noviceLevel = await context.Levels.FirstOrDefaultAsync(l => l.LevelName == "Novice");
+                var apprenticeLevel = await context.Levels.FirstOrDefaultAsync(l => l.LevelName == "Apprentice");
+                var warriorLevel = await context.Levels.FirstOrDefaultAsync(l => l.LevelName == "Warrior");
+                var legendLevel = await context.Levels.FirstOrDefaultAsync(l => l.LevelName == "Legend");
+
+                var badges = new List<Badges>
+                {
+                    // Novice level badges
+                    new Badges { Name = "First Step", Description = "Complete your first challenge", Points = 100, Image = "fa-shoe-prints", RequiredLevelId = noviceLevel?.Id, CriteriaType = "ChallengeCount", CriteriaValue = 1 },
+                    new Badges { Name = "Explorer", Description = "Join 3 different challenges", Points = 150, Image = "fa-compass", RequiredLevelId = noviceLevel?.Id, CriteriaType = "ChallengeCount", CriteriaValue = 3 },
+
+                    // Apprentice level badges
+                    new Badges { Name = "Apprentice Rising", Description = "Reach Apprentice level", Points = 300, Image = "fa-graduation-cap", RequiredLevelId = apprenticeLevel?.Id, CriteriaType = "Level", CriteriaValue = 0 },
+                    new Badges { Name = "Consistency King", Description = "Log activities for 7 consecutive days", Points = 500, Image = "fa-crown", RequiredLevelId = apprenticeLevel?.Id, CriteriaType = "Streak", CriteriaValue = 7 },
+
+                    // Warrior level badges
+                    new Badges { Name = "Warrior Spirit", Description = "Reach Warrior level", Points = 800, Image = "fa-shield-halved", RequiredLevelId = warriorLevel?.Id, CriteriaType = "Level", CriteriaValue = 0 },
+                    new Badges { Name = "Quest Master", Description = "Complete 10 challenges", Points = 1000, Image = "fa-trophy", RequiredLevelId = warriorLevel?.Id, CriteriaType = "ChallengeCount", CriteriaValue = 10 },
+
+                    // Legend level badges
+                    new Badges { Name = "Living Legend", Description = "Reach Legend level", Points = 2000, Image = "fa-dragon", RequiredLevelId = legendLevel?.Id, CriteriaType = "Level", CriteriaValue = 0 },
+                    new Badges { Name = "Unstoppable", Description = "Complete 20 challenges", Points = 3000, Image = "fa-fire-flame-curved", RequiredLevelId = legendLevel?.Id, CriteriaType = "ChallengeCount", CriteriaValue = 20 }
+                };
+                await context.Badges.AddRangeAsync(badges);
             }
 
             // Seed Categories

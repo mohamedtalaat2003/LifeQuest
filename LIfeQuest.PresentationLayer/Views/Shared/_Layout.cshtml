@@ -42,6 +42,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Decision" ? "active" : "")" asp-controller="Decision" asp-action="Index">
+                        <i class="fas fa-balance-scale"></i> Decisions
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Analytics" ? "active" : "")" asp-controller="Analytics" asp-action="Index">
                         <i class="fas fa-chart-line"></i> Analytics
                     </a>

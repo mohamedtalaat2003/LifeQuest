@@ -38,8 +38,8 @@ namespace LifeQuest.BLL.Services.Implementation
 
         public async Task<IEnumerable<BadgeDTO>> GetAllBadgesAsync()
         {
-            // جلب كل الاوسمه
-            var badges = await _unitOfWork.Repository<Badges>().GetAllAsync();
+            // جلب كل الاوسمه مع الليفل المطلوب بتاعها
+            var badges = await _unitOfWork.Repository<Badges>().GetAllWithIncludesAsync(null, "RequiredLevel");
             return _mapper.Map<IEnumerable<BadgeDTO>>(badges);
         }
 

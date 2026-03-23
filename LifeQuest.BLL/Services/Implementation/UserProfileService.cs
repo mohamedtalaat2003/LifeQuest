@@ -10,11 +10,13 @@ namespace LifeQuest.BLL.Services.Implementation
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUserBadgeService _userBadgeService;
 
-        public UserProfileService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserProfileService(IUnitOfWork unitOfWork, IMapper mapper, IUserBadgeService userBadgeService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userBadgeService = userBadgeService;
         }
 
         public async Task<UserProfileDTO?> GetUserProfileAsync(int userId)
@@ -159,6 +161,10 @@ namespace LifeQuest.BLL.Services.Implementation
                 {
                     userProfile.LevelId = nextLevel.Id;
                     await _unitOfWork.Repository<UserProfile>().Update(userProfile);
+                    
+                    // التحقق من منح أوسمة جديدة بعد الترقي
+                    await _userBadgeService.CheckAndAwardBadgesAsync(userId);
+                    
                     Console.WriteLine($"[UserProfileService] User {userId} leveled up to {nextLevel.LevelName}!");
                 }
             }
