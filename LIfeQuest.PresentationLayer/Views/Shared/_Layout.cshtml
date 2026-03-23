@@ -22,7 +22,7 @@
         <!-- Sidebar -->
         <nav id="sidebar">
             <a href="/" class="sidebar-brand">
-                <i class="fas fa-rocket me-2"></i> Life Quest
+                <i class="fas fa-rocket me-2"></i> Life Quest <span class="badge bg-primary fs-6">v2.0</span>
             </a>
             <hr class="mx-3 my-0 border-light opacity-10">
             <ul class="nav flex-column mt-3">
@@ -41,6 +41,7 @@
                         <i class="fas fa-medal"></i> Badges
                     </a>
                 </li>
+                <!-- Decisions Module -->
                 <li class="nav-item">
                     <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Decision" ? "active" : "")" asp-controller="Decision" asp-action="Index">
                         <i class="fas fa-balance-scale"></i> Decisions
