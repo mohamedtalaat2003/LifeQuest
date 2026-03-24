@@ -15,9 +15,7 @@ namespace LifeQuest.DAL.Models
 
         public bool IsSuccess { get; set; }
 
-        [RegularExpression("^(Ended|InProgress|NotStarted)$",
-            ErrorMessage = "Status must be Ended, InProgress, or NotStarted")]
-        public string Status { get; set; } = string.Empty;
+        public ChallengeStatus Status { get; set; } = ChallengeStatus.NotStarted;
 
         public int CurrentProgress { get; set; }
 

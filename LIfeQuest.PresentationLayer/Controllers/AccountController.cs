@@ -372,5 +372,11 @@ namespace LifeQuest.PresentationLayer.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

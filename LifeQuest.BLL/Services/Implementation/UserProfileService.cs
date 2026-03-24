@@ -3,6 +3,7 @@ using LifeQuest.BLL.DTOs;
 using LifeQuest.BLL.Services.Interfaces;
 using LifeQuest.DAL.Models;
 using LifeQuest.DAL.UOW.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace LifeQuest.BLL.Services.Implementation
 {
@@ -11,23 +12,23 @@ namespace LifeQuest.BLL.Services.Implementation
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserBadgeService _userBadgeService;
+        private readonly ILogger<UserProfileService> _logger;
 
-        public UserProfileService(IUnitOfWork unitOfWork, IMapper mapper, IUserBadgeService userBadgeService)
+        public UserProfileService(IUnitOfWork unitOfWork, IMapper mapper, IUserBadgeService userBadgeService, ILogger<UserProfileService> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userBadgeService = userBadgeService;
+            _logger = logger;
         }
 
         public async Task<UserProfileDTO?> GetUserProfileAsync(int userId)
         {
-            // هجيب بيانات الملف الشخصي بتاع اليوزر بكل الحاجات اللي معاه (badges, challenges, level)
             var userProfile = await _unitOfWork.Repository<UserProfile>()
                 .GetByIdWithIncludeAsync(up => up.UserId == userId, "User", "Level", "User.UserBadges", "User.UserChallenges");
 
             if (userProfile == null)
             {
-                // لو مش موجود، هنكريت واحد جديد بالمرة
                 var defaultLevel = await _unitOfWork.Repository<Level>().GetAllAsync();
                 var firstLevel = defaultLevel.OrderBy(l => l.Point).FirstOrDefault();
                 
@@ -42,22 +43,19 @@ namespace LifeQuest.BLL.Services.Implementation
                 await _unitOfWork.Repository<UserProfile>().AddAsync(userProfile);
                 await _unitOfWork.CompleteAsync();
                 
-                // هنجيبه تانى عشان يبقى معاه ال includes
                 userProfile = await _unitOfWork.Repository<UserProfile>()
                     .GetByIdWithIncludeAsync(up => up.UserId == userId, "User", "Level", "User.UserBadges", "User.UserChallenges");
             }
 
             var dto = _mapper.Map<UserProfileDTO>(userProfile);
 
-            // هنحسب عدد البادجات والتحديات اللي لسه شغالة يدوي من الريبوزيتوري مباشرة عشان نضمن الدقة
             dto.TotalBadges = (await _unitOfWork.Repository<UserBadge>().GetAllWithIncludesAsync(ub => ub.UserId == userId)).Count();
 
             var userChallenges = await _unitOfWork.Repository<UserChallenge>().GetAllWithIncludesAsync(uc => uc.UserId == userId);
-            dto.ActiveChallenges = userChallenges.Count(uc => uc.Status == "InProgress" || uc.Status == "NotStarted");
+            dto.ActiveChallenges = userChallenges.Count(uc => uc.Status == ChallengeStatus.InProgress || uc.Status == ChallengeStatus.NotStarted);
 
-            Console.WriteLine($"[UserProfileService] GetUserProfileAsync for user {userId}: Active challenges found: {dto.ActiveChallenges}, Total Points: {userProfile!.TotalPoints}");
+            _logger.LogInformation("GetUserProfileAsync for user {UserId}: Active challenges found: {ActiveChallenges}, Total Points: {TotalPoints}", userId, dto.ActiveChallenges, userProfile!.TotalPoints);
 
-            // هحسب النقاط اللي ناقصة عشان يطلع للمستوى اللي بعده
             var allLevels = await _unitOfWork.Repository<Level>().GetAllAsync();
             var nextLevel = allLevels
                 .Where(l => l.Point > userProfile.TotalPoints)
@@ -70,7 +68,7 @@ namespace LifeQuest.BLL.Services.Implementation
             }
             else
             {
-                dto.RemainingPointsForNextLevel = 0; // وصل لأعلى مستوى خلاص
+                dto.RemainingPointsForNextLevel = 0;
             }
 
             return dto;
@@ -78,13 +76,11 @@ namespace LifeQuest.BLL.Services.Implementation
 
         public async Task UpdateUserProfileAsync(UserProfileDTO dto)
         {
-            // هعدل بيانات الملف الشخصي (زي الـ Bio)
             var userProfile = await _unitOfWork.Repository<UserProfile>().GetByIdAsync(dto.UserId);
             if (userProfile != null)
             {
                 userProfile.Bio = dto.Bio;
                 
-                // Only update the profile picture URL if a new one was provided
                 if (!string.IsNullOrEmpty(dto.ProfilePictureUrl))
                 {
                     userProfile.ProfilePictureUrl = dto.ProfilePictureUrl;
@@ -97,13 +93,11 @@ namespace LifeQuest.BLL.Services.Implementation
 
         public async Task AddPointsToUserAsync(int userId, int points)
         {
-            // هزود نقاط لليوزر وهشوف لو يستاهل يترقى لمستوى أعلى
             var userProfile = await _unitOfWork.Repository<UserProfile>()
-                .GetByIdWithIncludeAsync(up => up.UserId == userId); // استعملنا بريديكت عشان نضمن الدقة
+                .GetByIdWithIncludeAsync(up => up.UserId == userId);
             
             if (userProfile == null)
             {
-                // لو مش موجود نكرته (ممكن يكون لسبب ما متكرتش وقت التسجيل)
                 await GetUserProfileAsync(userId);
                 userProfile = await _unitOfWork.Repository<UserProfile>().GetByIdWithIncludeAsync(up => up.UserId == userId);
             }
@@ -112,22 +106,20 @@ namespace LifeQuest.BLL.Services.Implementation
             {
                 userProfile.TotalPoints += points;
                 await _unitOfWork.Repository<UserProfile>().Update(userProfile);
+                await _unitOfWork.CompleteAsync();
                 
-                // هعمل تشيك على الليفل بعد ما زودنا النقاط (دي بـ تأثر على الـ state بس)
                 await CheckLevelUpAsync(userId);
                 
-                // await _unitOfWork.CompleteAsync(); // شيلنا دي عشان اللي بينادي هو اللي يقرر يحفظ امتى
-                Console.WriteLine($"[UserProfileService] Points added to state for user {userId}. Total: {userProfile.TotalPoints}");
+                _logger.LogInformation("Points added to state for user {UserId}. Total: {TotalPoints}", userId, userProfile.TotalPoints);
             }
             else
             {
-                Console.WriteLine($"[UserProfileService] ERROR: Could not find/create profile for user {userId}");
+                _logger.LogError("Could not find/create profile for user {UserId}", userId);
             }
         }
 
         public async Task UpdateSuccessRateAsync(int userId)
         {
-            // هحسب نسبة النجاح بتاعته بناءً على التحديات اللي خلصها صح
             var userChallenges = await _unitOfWork.Repository<UserChallenge>()
                 .GetAllWithIncludesAsync(uc => uc.UserId == userId);
 
@@ -147,7 +139,6 @@ namespace LifeQuest.BLL.Services.Implementation
 
         public async Task CheckLevelUpAsync(int userId)
         {
-            // هشوف إجمالي نقاط اليوزر وهرقيه للمستوى المناسب لنقاطه
             var userProfile = await _unitOfWork.Repository<UserProfile>().GetByIdWithIncludeAsync(up => up.UserId == userId);
             if (userProfile != null)
             {
@@ -161,11 +152,11 @@ namespace LifeQuest.BLL.Services.Implementation
                 {
                     userProfile.LevelId = nextLevel.Id;
                     await _unitOfWork.Repository<UserProfile>().Update(userProfile);
+                    await _unitOfWork.CompleteAsync();
                     
-                    // التحقق من منح أوسمة جديدة بعد الترقي
                     await _userBadgeService.CheckAndAwardBadgesAsync(userId);
                     
-                    Console.WriteLine($"[UserProfileService] User {userId} leveled up to {nextLevel.LevelName}!");
+                    _logger.LogInformation("User {UserId} leveled up to {LevelName}!", userId, nextLevel.LevelName);
                 }
             }
         }

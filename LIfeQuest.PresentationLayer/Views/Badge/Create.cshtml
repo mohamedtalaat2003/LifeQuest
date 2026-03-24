@@ -1,0 +1,76 @@
+@model LifeQuest.BLL.DTOs.BadgeDTO
+@using LifeQuest.DAL.Models
+@{
+    ViewData["Title"] = "Create Badge";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center mb-4">
+            <h2 class="fw-bold">Create New Honor</h2>
+            <p class="text-muted">Design a new milestone for your community to strive for.</p>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label fw-bold">Badge Name</label>
+                                <input asp-for="Name" class="form-control bg-light border-0 rounded-3 shadow-sm" placeholder="e.g. Early Bird" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Image" class="form-label fw-bold">Icon (FontAwesome Class)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-0 shadow-sm rounded-start-3"><i class="fas fa-icons"></i></span>
+                                    <input asp-for="Image" class="form-control bg-light border-0 rounded-end-3 shadow-sm" placeholder="fa-award" />
+                                </div>
+                                <span asp-validation-for="Image" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label asp-for="Description" class="form-label fw-bold">Description</label>
+                                <textarea asp-for="Description" class="form-control bg-light border-0 rounded-3 shadow-sm" rows="2" placeholder="Tell users how to earn this..."></textarea>
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Points" class="form-label fw-bold">Reward Points</label>
+                                <input asp-for="Points" type="number" class="form-control bg-light border-0 rounded-3 shadow-sm" />
+                                <span asp-validation-for="Points" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="CriteriaType" class="form-label fw-bold">Criteria Type</label>
+                                <select asp-for="CriteriaType" class="form-select bg-light border-0 rounded-3 shadow-sm">
+                                    <option value="Level">Reach Level</option>
+                                    <option value="ChallengeCount">Complete Challenges</option>
+                                    <option value="Streak">Consistency Streak</option>
+                                </select>
+                                <span asp-validation-for="CriteriaType" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="CriteriaValue" class="form-label fw-bold">Criteria Goal</label>
+                                <input asp-for="CriteriaValue" type="number" class="form-control bg-light border-0 rounded-3 shadow-sm" />
+                                <span asp-validation-for="CriteriaValue" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow">
+                                <i class="fas fa-plus-circle me-2"></i> Create Badge
+                            </button>
+                            <a asp-action="Index" class="btn btn-link text-muted text-decoration-none small">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Management
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

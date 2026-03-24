@@ -45,7 +45,7 @@ namespace LifeQuest.BLL.Services.Implementation
         {
             // هعدل بيانات القسم اللى جايلى
             var category = _mapper.Map<Category>(dto);
-            _unitOfWork.Repository<Category>().Update(category);
+            await _unitOfWork.Repository<Category>().Update(category);
             return await _unitOfWork.CompleteAsync() > 0;
         }
 

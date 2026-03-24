@@ -37,11 +37,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Badge" ? "active" : "")" asp-controller="Badge" asp-action="Index">
-                        <i class="fas fa-medal"></i> Badges
-                    </a>
-                </li>
-                <!-- Decisions Module -->
+                <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Achievements") ? "active bg-primary bg-opacity-10 text-primary fw-bold" : "text-muted")"
+                   asp-controller="Achievements" asp-action="Index">
+                    <i class="fas fa-award me-3"></i>
+                    <span>Achievements</span>
+                </a>
+            </li>    <!-- Decisions Module -->
                 <li class="nav-item">
                     <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Decision" ? "active" : "")" asp-controller="Decision" asp-action="Index">
                         <i class="fas fa-balance-scale"></i> Decisions
@@ -57,6 +58,22 @@
                         <i class="fas fa-user-circle"></i> Profile
                     </a>
                 </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <hr class="mx-3 my-2 border-light opacity-10">
+                    <li class="px-3 mb-2 mt-2"><small class="text-uppercase fw-bold text-muted small" style="font-size: 0.65rem;">Admin Portal</small></li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")" asp-controller="Category" asp-action="Index">
+                            <i class="fas fa-tags"></i> Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Level" ? "active" : "")" asp-controller="Level" asp-action="Index">
+                            <i class="fas fa-layer-group"></i> Levels
+                        </a>
+                    </li>
+                }
             </ul>
         </nav>
 
@@ -114,7 +131,21 @@
             </nav>
 
             <!-- Main Body -->
-            <div class="container-fluid">
+            <div class="container-fluid py-4">
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4 border-start border-4 border-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4 border-start border-4 border-success" role="alert">
+                        <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
                 @RenderBody()
             </div>
 

@@ -1,4 +1,5 @@
 using LifeQuest.BLL.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using LifeQuest.BLL.Services.Interfaces;
 using LifeQuest.DAL.Models;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace LifeQuest.PL.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class BadgeController : Controller
     {
         private readonly IBadgeService _badgeService;

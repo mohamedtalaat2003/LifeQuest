@@ -78,14 +78,14 @@ namespace LifeQuest.BLL.Services.Implementation
 
                 bool shouldAward = badge.CriteriaType switch
                 {
-                    "Level" => (userProfile.Level.LevelsCount >= badge.CriteriaValue) || (badge.RequiredLevelId.HasValue && userProfile.LevelId == badge.RequiredLevelId),
-                    "ChallengeCount" => completedCount >= badge.CriteriaValue,
-                    "Streak" => currentStreak >= badge.CriteriaValue,
+                    BadgeCriteriaType.Level => (userProfile.Level.LevelsCount >= badge.CriteriaValue) || (badge.RequiredLevelId.HasValue && userProfile.LevelId == badge.RequiredLevelId),
+                    BadgeCriteriaType.ChallengeCount => completedCount >= badge.CriteriaValue,
+                    BadgeCriteriaType.Streak => currentStreak >= badge.CriteriaValue,
                     _ => false
                 };
 
                 // استثناء خاص ببادجات الليفل لو مربوطه بـ ID معين مباشرة
-                if (badge.CriteriaType == "Level" && badge.RequiredLevelId.HasValue)
+                if (badge.CriteriaType == BadgeCriteriaType.Level && badge.RequiredLevelId.HasValue)
                 {
                     // لو ليفل اليوزر الحالى هو نفس ليفل البادج او اعلى منه (بناء على عدد الليفلات)
                     var reqLevel = badge.RequiredLevel;

@@ -1,9 +1,11 @@
 using LifeQuest.BLL.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using LifeQuest.BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LifeQuest.PL.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;

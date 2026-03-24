@@ -23,6 +23,13 @@ namespace LifeQuest.PresentationLayer.Controllers
             var userIdStr = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userIdStr)) return RedirectToAction("Login", "Account");
             
+            var userExists = await _userManager.FindByIdAsync(userIdStr);
+            if (userExists == null)
+            {
+                // Stale cookie from dropped database
+                return RedirectToAction("Logout", "Account");
+            }
+
             int userId = int.Parse(userIdStr);
             var profile = await _userProfileService.GetUserProfileAsync(userId);
 

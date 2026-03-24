@@ -13,15 +13,22 @@ namespace LifeQuest.PresentationLayer.Controllers
         private readonly IDailyLogService _dailyLogService;
         private readonly IUserChallengeService _userChallengeService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<DailyLogController> _logger;
 
-        public DailyLogController(IDailyLogService dailyLogService, IUserChallengeService userChallengeService, UserManager<ApplicationUser> userManager)
+        public DailyLogController(IDailyLogService dailyLogService, IUserChallengeService userChallengeService, UserManager<ApplicationUser> userManager, ILogger<DailyLogController> logger)
         {
             _dailyLogService = dailyLogService;
             _userChallengeService = userChallengeService;
             _userManager = userManager;
+            _logger = logger;
         }
 
-        private int GetUserId() => int.Parse(_userManager.GetUserId(User)!);
+        private int GetUserId()
+        {
+            var id = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(id)) throw new UnauthorizedAccessException();
+            return int.Parse(id);
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -32,7 +39,7 @@ namespace LifeQuest.PresentationLayer.Controllers
             var activeChallenges = await _userChallengeService.GetUserChallengesAsync(userId);
 
             ViewBag.Streak = streak;
-            ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == "InProgress" || uc.Status == "NotStarted").ToList();
+            ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == ChallengeStatus.InProgress || uc.Status == ChallengeStatus.NotStarted).ToList();
 
             return View(todayLogs);
         }
@@ -43,8 +50,8 @@ namespace LifeQuest.PresentationLayer.Controllers
             int userId = GetUserId();
 
             var activeChallenges = await _userChallengeService.GetUserChallengesAsync(userId);
-            Console.WriteLine($"[DailyLogController] Create (GET) for user {userId}: Active challenges found in service: {activeChallenges.Count()}");
-            ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == "InProgress" || uc.Status == "NotStarted").ToList();
+            _logger.LogInformation("Create (GET) for user {UserId}: Active challenges found: {Count}", userId, activeChallenges.Count());
+            ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == ChallengeStatus.InProgress || uc.Status == ChallengeStatus.NotStarted).ToList();
 
             return View(new DailyLogDTO());
         }
@@ -58,26 +65,16 @@ namespace LifeQuest.PresentationLayer.Controllers
             if (!ModelState.IsValid)
             {
                 var activeChallenges = await _userChallengeService.GetUserChallengesAsync(userId);
-                ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == "InProgress" || uc.Status == "NotStarted").ToList();
+                ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == ChallengeStatus.InProgress || uc.Status == ChallengeStatus.NotStarted).ToList();
                 return View(dto);
             }
 
-            try
+            var success = await _dailyLogService.AddLogAsync(dto, userId);
+            if (!success)
             {
-                var success = await _dailyLogService.AddLogAsync(dto, userId);
-                if (!success)
-                {
-                    ModelState.AddModelError("", "Failed to add daily log.");
-                    var activeChallenges = await _userChallengeService.GetUserChallengesAsync(userId);
-                    ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == "InProgress" || uc.Status == "NotStarted").ToList();
-                    return View(dto);
-                }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to add daily log.");
                 var activeChallenges = await _userChallengeService.GetUserChallengesAsync(userId);
-                ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == "InProgress" || uc.Status == "NotStarted").ToList();
+                ViewBag.ActiveChallenges = activeChallenges.Where(uc => uc.Status == ChallengeStatus.InProgress || uc.Status == ChallengeStatus.NotStarted).ToList();
                 return View(dto);
             }
 
@@ -89,15 +86,8 @@ namespace LifeQuest.PresentationLayer.Controllers
         {
             if (userChallengeId <= 0) return BadRequest();
 
-            try
-            {
-                var percentage = await _dailyLogService.GetChallengeProcessPrecentageAsync(userChallengeId);
-                ViewBag.ProgressPercentage = percentage;
-            }
-            catch (Exception ex)
-            {
-                ViewBag.ErrorMessage = ex.Message;
-            }
+            var percentage = await _dailyLogService.GetChallengeProcessPrecentageAsync(userChallengeId);
+            ViewBag.ProgressPercentage = percentage;
 
             return View();
         }

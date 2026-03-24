@@ -19,7 +19,12 @@ namespace LifeQuest.PL.Controllers
             _userManager = userManager;
         }
 
-        private int GetUserId() => int.Parse(_userManager.GetUserId(User)!);
+        private int GetUserId()
+        {
+            var id = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(id)) throw new UnauthorizedAccessException();
+            return int.Parse(id);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -41,6 +46,10 @@ namespace LifeQuest.PL.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // Authorization: verify ownership
+            if (decision.UserId != GetUserId())
+                return Forbid();
+
             return View(decision);
         }
 
@@ -55,18 +64,10 @@ namespace LifeQuest.PL.Controllers
 
             dto.UserId = GetUserId();
 
-            try
+            var success = await _decisionService.AddDecisionAsync(dto);
+            if (!success)
             {
-                var success = await _decisionService.AddDecisionAsync(dto);
-                if (!success)
-                {
-                    ModelState.AddModelError("", "Failed to add decision");
-                    return View(dto);
-                }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to add decision");
                 return View(dto);
             }
 
@@ -85,6 +86,10 @@ namespace LifeQuest.PL.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // Authorization: verify ownership
+            if (decision.UserId != GetUserId())
+                return Forbid();
+
             return View(decision);
         }
 
@@ -94,21 +99,19 @@ namespace LifeQuest.PL.Controllers
         {
             if (id <= 0) return BadRequest();
 
-            try
+            // Authorization: verify ownership
+            var decision = await _decisionService.GetDecisionDetailsAsync(id);
+            if (decision != null && decision.UserId != GetUserId())
+                return Forbid();
+
+            var result = await _decisionService.UpdateDecisionResultAsync(id, isSuccess);
+            if (!result)
             {
-                var result = await _decisionService.UpdateDecisionResultAsync(id, isSuccess);
-                if (!result)
-                {
-                    TempData["ErrorMessage"] = "Failed to update decision result";
-                }
-                else
-                {
-                    TempData["SuccessMessage"] = $"Decision marked as {(isSuccess ? "Success" : "Failed")}";
-                }
+                TempData["ErrorMessage"] = "Failed to update decision result";
             }
-            catch (Exception ex)
+            else
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["SuccessMessage"] = $"Decision marked as {(isSuccess ? "Success" : "Failed")}";
             }
 
             return RedirectToAction(nameof(Index));
@@ -126,6 +129,10 @@ namespace LifeQuest.PL.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // Authorization: verify ownership
+            if (decision.UserId != GetUserId())
+                return Forbid();
+
             return View(decision);
         }
 
@@ -133,18 +140,15 @@ namespace LifeQuest.PL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
+            // Authorization: verify ownership
+            var decision = await _decisionService.GetDecisionDetailsAsync(id);
+            if (decision != null && decision.UserId != GetUserId())
+                return Forbid();
+
+            var result = await _decisionService.DeleteDecisionAsync(id);
+            if (!result)
             {
-                var result = await _decisionService.DeleteDecisionAsync(id);
-                if (!result)
-                {
-                    ModelState.AddModelError("", "Failed to delete decision");
-                    return View();
-                }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to delete decision");
                 return View();
             }
 

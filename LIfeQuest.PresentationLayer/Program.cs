@@ -88,8 +88,8 @@ namespace LifeQuest.PresentationLayer
                 var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
-                await DataSeeder.SeedAsync(context, userManager);
                 await RoleSeeder.SeedRolesAsync(roleManager);
+                await DataSeeder.SeedAsync(context, userManager);
             }
 
             // Configure the HTTP request pipeline.
@@ -99,6 +99,8 @@ namespace LifeQuest.PresentationLayer
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }       
+
+            app.UseMiddleware<LifeQuest.PL.Middleware.GlobalExceptionMiddleware>();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

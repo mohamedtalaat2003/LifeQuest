@@ -55,25 +55,6 @@ namespace LifeQuest.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Badges",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Points = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Badges", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
@@ -87,24 +68,6 @@ namespace LifeQuest.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Decisions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsConfident = table.Column<bool>(type: "bit", nullable: false),
-                    IsSuccess = table.Column<bool>(type: "bit", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Decisions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -232,6 +195,31 @@ namespace LifeQuest.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Decisions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsConfident = table.Column<bool>(type: "bit", nullable: false),
+                    IsSuccess = table.Column<bool>(type: "bit", nullable: true),
+                    RiskLevel = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Decisions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Decisions_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Challenges",
                 columns: table => new
                 {
@@ -240,9 +228,12 @@ namespace LifeQuest.DAL.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Points = table.Column<int>(type: "int", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false),
                     IsPublic = table.Column<bool>(type: "bit", nullable: false),
-                    Difficulty = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Difficulty = table.Column<int>(type: "int", nullable: false),
                     ApplicationUserId = table.Column<int>(type: "int", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -261,6 +252,65 @@ namespace LifeQuest.DAL.Migrations
                         name: "FK_Challenges_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Badges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Points = table.Column<int>(type: "int", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequiredLevelId = table.Column<int>(type: "int", nullable: true),
+                    CriteriaType = table.Column<int>(type: "int", nullable: false),
+                    CriteriaValue = table.Column<int>(type: "int", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Badges", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Badges_Levels_RequiredLevelId",
+                        column: x => x.RequiredLevelId,
+                        principalTable: "Levels",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserProfiles",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalPoints = table.Column<int>(type: "int", nullable: false),
+                    SuccessRate = table.Column<int>(type: "int", nullable: false),
+                    LevelId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProfiles", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_UserProfiles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserProfiles_Levels_LevelId",
+                        column: x => x.LevelId,
+                        principalTable: "Levels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -292,32 +342,65 @@ namespace LifeQuest.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserProfiles",
+                name: "UserChallenges",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    Bio = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    TotalPoints = table.Column<int>(type: "int", nullable: false),
-                    SuccessRate = table.Column<int>(type: "int", nullable: false),
-                    LevelId = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<int>(type: "int", nullable: true),
+                    ChallengeId = table.Column<int>(type: "int", nullable: false),
+                    IsSuccess = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CurrentProgress = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProfiles", x => x.UserId);
+                    table.PrimaryKey("PK_UserChallenges", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserProfiles_AspNetUsers_UserId",
+                        name: "FK_UserChallenges_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserChallenges_Challenges_ChallengeId",
+                        column: x => x.ChallengeId,
+                        principalTable: "Challenges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserBadges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    BadgeId = table.Column<int>(type: "int", nullable: false),
+                    AwardedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserBadges", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserBadges_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserProfiles_Levels_LevelId",
-                        column: x => x.LevelId,
-                        principalTable: "Levels",
+                        name: "FK_UserBadges_Badges_BadgeId",
+                        column: x => x.BadgeId,
+                        principalTable: "Badges",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -332,7 +415,9 @@ namespace LifeQuest.DAL.Migrations
                     Points = table.Column<int>(type: "int", nullable: false),
                     CurrentProgress = table.Column<int>(type: "int", nullable: false),
                     ChallengeId = table.Column<int>(type: "int", nullable: false),
+                    UserChallengeId = table.Column<int>(type: "int", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LogDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -346,45 +431,11 @@ namespace LifeQuest.DAL.Migrations
                         principalTable: "Challenges",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserChallenges",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ChallengeId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId = table.Column<int>(type: "int", nullable: true),
-                    IsSuccess = table.Column<bool>(type: "bit", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BadgeId = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserChallenges", x => new { x.UserId, x.ChallengeId });
                     table.ForeignKey(
-                        name: "FK_UserChallenges_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_DailyLogs_UserChallenges_UserChallengeId",
+                        column: x => x.UserChallengeId,
+                        principalTable: "UserChallenges",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserChallenges_Badges_BadgeId",
-                        column: x => x.BadgeId,
-                        principalTable: "Badges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserChallenges_Challenges_ChallengeId",
-                        column: x => x.ChallengeId,
-                        principalTable: "Challenges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -427,6 +478,11 @@ namespace LifeQuest.DAL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Badges_RequiredLevelId",
+                table: "Badges",
+                column: "RequiredLevelId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Challenges_ApplicationUserId",
                 table: "Challenges",
                 column: "ApplicationUserId");
@@ -442,10 +498,30 @@ namespace LifeQuest.DAL.Migrations
                 column: "ChallengeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DailyLogs_UserChallengeId",
+                table: "DailyLogs",
+                column: "UserChallengeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Decisions_UserId",
+                table: "Decisions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Metrics_DecisionId",
                 table: "Metrics",
                 column: "DecisionId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserBadges_BadgeId",
+                table: "UserBadges",
+                column: "BadgeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserBadges_UserId",
+                table: "UserBadges",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserChallenges_ApplicationUserId",
@@ -453,20 +529,20 @@ namespace LifeQuest.DAL.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserChallenges_BadgeId",
-                table: "UserChallenges",
-                column: "BadgeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserChallenges_ChallengeId",
                 table: "UserChallenges",
                 column: "ChallengeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserChallenges_UserId_ChallengeId",
+                table: "UserChallenges",
+                columns: new[] { "UserId", "ChallengeId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_LevelId",
                 table: "UserProfiles",
-                column: "LevelId",
-                unique: true);
+                column: "LevelId");
         }
 
         /// <inheritdoc />
@@ -494,13 +570,16 @@ namespace LifeQuest.DAL.Migrations
                 name: "Metrics");
 
             migrationBuilder.DropTable(
-                name: "UserChallenges");
+                name: "UserBadges");
 
             migrationBuilder.DropTable(
                 name: "UserProfiles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "UserChallenges");
 
             migrationBuilder.DropTable(
                 name: "Decisions");

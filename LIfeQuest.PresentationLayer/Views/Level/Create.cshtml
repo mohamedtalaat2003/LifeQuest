@@ -1,0 +1,47 @@
+@model LifeQuest.BLL.DTOs.LevelDTO
+@{
+    ViewData["Title"] = "Create Level";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold mb-4 text-center">New Level</h2>
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="LevelName" class="form-label fw-bold">Level Name</label>
+                            <input asp-for="LevelName" class="form-control form-control-lg bg-light border-0 rounded-3 shadow-sm" placeholder="e.g. Master, Grandmaster..." />
+                            <span asp-validation-for="LevelName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <label asp-for="LevelsCount" class="form-label fw-bold">Order (Position)</label>
+                                <input asp-for="LevelsCount" type="number" class="form-control bg-light border-0 rounded-3 shadow-sm" />
+                                <span asp-validation-for="LevelsCount" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="Point" class="form-label fw-bold">Points Threshold</label>
+                                <input asp-for="Point" type="number" class="form-control bg-light border-0 rounded-3 shadow-sm" />
+                                <span asp-validation-for="Point" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow">
+                                <i class="fas fa-save me-2"></i> Save Rank
+                            </button>
+                            <a asp-action="Index" class="btn btn-link text-muted text-decoration-none small">
+                                <i class="fas fa-arrow-left me-1"></i> Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

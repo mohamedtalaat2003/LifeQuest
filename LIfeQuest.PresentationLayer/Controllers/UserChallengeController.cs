@@ -18,7 +18,12 @@ namespace LifeQuest.PL.Controllers
             _userManager = userManager;
         }
 
-        private int GetUserId() => int.Parse(_userManager.GetUserId(User)!);
+        private int GetUserId()
+        {
+            var id = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(id)) throw new UnauthorizedAccessException();
+            return int.Parse(id);
+        }
 
         [HttpGet]
         public async Task<IActionResult> UserChallenges()

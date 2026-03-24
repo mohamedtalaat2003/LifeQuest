@@ -44,7 +44,6 @@ namespace LifeQuest.DAL.Data
             modelBuilder.Entity<Category>().HasQueryFilter(X => !X.IsDeleted);
             modelBuilder.Entity<DailyLog>().HasQueryFilter(X => !X.IsDeleted);
             modelBuilder.Entity<Decision>().HasQueryFilter(X => !X.IsDeleted);
-            modelBuilder.Entity<DailyLog>().HasQueryFilter(X => !X.IsDeleted);
             modelBuilder.Entity<Level>().HasQueryFilter(X => !X.IsDeleted);
             modelBuilder.Entity<MetricsCalc>().HasQueryFilter(X => !X.IsDeleted);
             modelBuilder.Entity<UserChallenge>().HasQueryFilter(X => !X.IsDeleted);

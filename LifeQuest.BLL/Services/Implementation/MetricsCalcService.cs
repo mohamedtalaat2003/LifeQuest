@@ -50,7 +50,7 @@ namespace LifeQuest.BLL.Services.Implementation
             int overConfidenceIndex = (int)((double)failedConfident / totalResolved * 100);
 
             // 4️⃣ Risk Pattern
-            int hardDecisions = allDecisions.Count(d => d.RiskLevel == "Hard");
+            int hardDecisions = allDecisions.Count(d => d.RiskLevel == RiskLevel.Hard);
             int riskPattern = (int)((double)hardDecisions / allDecisions.Count() * 100);
 
             return new MetricsCalc

@@ -1,6 +1,7 @@
 using AutoMapper;
 using LifeQuest.BLL.DTOs;
 using LifeQuest.BLL.Services.Interfaces;
+using LifeQuest.DAL.Exceptions;
 using LifeQuest.DAL.Models;
 using LifeQuest.DAL.UOW.Interface;
 
@@ -18,12 +19,12 @@ namespace LifeQuest.BLL.Services.Implementation
         }
         public async Task<UserChallengeDTO> GetChallengeDetailsAsync(int userId , int challengeId)
         {
-            var userChallenge =await _unitOfWork.Repository<UserChallenge>()
+            var userChallenge = await _unitOfWork.Repository<UserChallenge>()
                 .GetByIdWithIncludeAsync(X => X.UserId == userId && X.ChallengeId == challengeId , "Challenge");
 
             if(userChallenge == null)
             {
-                throw new Exception("User not registered in this challenge");
+                throw new NotFoundException("UserChallenge", $"UserId={userId}, ChallengeId={challengeId}");
             }
 
             var userChallengeDTO = _mapper.Map<UserChallengeDTO>(userChallenge);
@@ -33,7 +34,7 @@ namespace LifeQuest.BLL.Services.Implementation
 
         public async Task<IEnumerable<UserChallengeDTO>> GetUserChallengesAsync(int userId)
         {
-            var challengesOfUser =await _unitOfWork.Repository<UserChallenge>()
+            var challengesOfUser = await _unitOfWork.Repository<UserChallenge>()
                 .GetAllWithIncludesAsync(X => X.UserId == userId, "Challenge");
 
             var challengesOfUserDTO = _mapper.Map<IEnumerable<UserChallengeDTO>>(challengesOfUser);
@@ -45,24 +46,24 @@ namespace LifeQuest.BLL.Services.Implementation
         {
             var user = await _unitOfWork.Repository<ApplicationUser>().GetByIdAsync(userId);
 
-            if (user == null) throw new KeyNotFoundException("User accounts was not found.");
+            if (user == null) throw new NotFoundException("ApplicationUser", userId);
 
             var challenge = await _unitOfWork.Repository<Challenge>().GetByIdAsync(challengeId);
 
-            if (challenge == null) throw new KeyNotFoundException("The selected challenge no longer exists.");
+            if (challenge == null) throw new NotFoundException("Challenge", challengeId);
 
             var isChallengeExist = await _unitOfWork.Repository<UserChallenge>()
               .AnyAsync(X => X.UserId == userId && X.ChallengeId == challengeId);
 
             if (isChallengeExist)
-                throw new InvalidOperationException("You are already joined this challenge.");
+                throw new BusinessRuleException("You are already joined this challenge.");
 
             var userChallenge = new UserChallenge
             {
                 ChallengeId = challengeId,
                 UserId = userId,
                 StartDate = DateTime.Now,
-                Status = "NotStarted",
+                Status = ChallengeStatus.NotStarted,
                 CurrentProgress = 0,
                 IsSuccess = false,
             };
@@ -73,7 +74,7 @@ namespace LifeQuest.BLL.Services.Implementation
 
             if(result <= 0)
             {
-                throw new Exception("An error occurred while joining the challenge.");
+                throw new BusinessRuleException("An error occurred while joining the challenge.");
             }
         }
     }

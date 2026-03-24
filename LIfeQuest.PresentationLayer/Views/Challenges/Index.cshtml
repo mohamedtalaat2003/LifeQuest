@@ -1,68 +1,98 @@
 @model IEnumerable<LifeQuest.PresentationLayer.ViewModels.Challenges.ChallengeViewModel>
+@using LifeQuest.DAL.Models
 @{
-    ViewData["Title"] = "Challenges";
+    ViewData["Title"] = "Quest Board";
+    var publicChallenges = Model.Where(c => c.IsPublic).ToList();
+    var privateChallenges = Model.Where(c => !c.IsPublic).ToList();
 }
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Explore Challenges</h1>
-    <a asp-action="Create" class="btn btn-primary shadow-sm">
-        <i class="fas fa-plus fa-sm text-white-50 me-2"></i> Create New
-    </a>
-</div>
-
-<!-- Tabs -->
-<ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
-  <li class="nav-item" role="presentation">
-    <button class="nav-link active fw-bold px-4" id="pills-my-tab" data-bs-toggle="pill" data-bs-target="#pills-my" type="button" role="tab">Active Challenges</button>
-  </li>
-</ul>
-
-<div class="tab-content" id="pills-tabContent">
-  <!-- My Challenges Tab -->
-  <div class="tab-pane fade show active" id="pills-my" role="tabpanel">
-    <div class="row">
-        @if (!Model.Any())
-        {
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-tasks fa-3x text-gray-300 mb-3"></i>
-                <p class="text-muted">No challenges found. Create one to get started!</p>
-                <a asp-action="Create" class="btn btn-primary">Create Your First Challenge</a>
-            </div>
-        }
-        else
-        {
-            @foreach (var challenge in Model)
+<div class="container py-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-5">
+        <div>
+            <h1 class="fw-bold text-dark mb-1">Quest Board</h1>
+            <p class="text-muted">Discover new challenges or track your personal progress.</p>
+        </div>
+        <div class="d-flex gap-2">
+            @if (User.IsInRole("Admin"))
             {
-                <div class="col-xl-4 col-md-6 mb-4">
-                    <div class="card h-100 border-start border-@(challenge.Difficulty == "Hard" ? "danger" : challenge.Difficulty == "Medium" ? "warning" : "success") border-5">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-primary fw-bold small"><i class="fas fa-trophy me-1"></i> @(challenge.IsPublic ? "Public" : "Private")</span>
-                                <span class="badge bg-@(challenge.Difficulty == "Hard" ? "danger" : challenge.Difficulty == "Medium" ? "warning" : "success")-subtle text-@(challenge.Difficulty == "Hard" ? "danger" : challenge.Difficulty == "Medium" ? "warning" : "success") border border-@(challenge.Difficulty == "Hard" ? "danger" : challenge.Difficulty == "Medium" ? "warning" : "success")">
-                                    @challenge.Difficulty
-                                </span>
-                            </div>
-                            <h5 class="fw-bold">@challenge.Title</h5>
-                            <p class="text-muted small">Points: <span class="fw-bold text-warning">@challenge.Points</span> | Duration: @challenge.Duration days</p>
-                            <p class="text-muted small">@challenge.Description</p>
-                            <div class="mt-4">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span class="small fw-bold">Timeline</span>
-                                    <span class="small">@challenge.StartDate.ToString("MMM dd") - @challenge.EndDate.ToString("MMM dd")</span>
-                                </div>
-                                <div class="progress mb-3">
-                                    <div class="progress-bar bg-primary" style="width: 100%"></div>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a asp-action="Details" asp-route-id="@challenge.Id" class="btn btn-primary btn-sm flex-grow-1">View Details</a>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <a asp-action="Create" asp-route-isPublic="true" class="btn btn-success rounded-pill px-4 py-2 shadow-sm fw-bold">
+                    <i class="fas fa-globe me-2"></i> Create Global Quest
+                </a>
             }
-        }
+            <a asp-action="Create" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm fw-bold">
+                <i class="fas fa-plus me-2"></i> Create Personal Quest
+            </a>
+        </div>
     </div>
-  </div>
+
+    <!-- Custom Styled Tabs -->
+    <ul class="nav nav-pills mb-5 bg-light p-2 rounded-4 d-inline-flex border" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-4 px-4 py-2 fw-bold" id="pills-public-tab" data-bs-toggle="pill" data-bs-target="#pills-public" type="button" role="tab">
+                <i class="fas fa-globe me-2"></i> Global Quests
+                <span class="badge bg-white text-primary ms-2">@publicChallenges.Count</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-4 px-4 py-2 fw-bold" id="pills-private-tab" data-bs-toggle="pill" data-bs-target="#pills-private" type="button" role="tab">
+                <i class="fas fa-lock me-2"></i> Personal Quests
+                <span class="badge bg-white text-dark ms-2">@privateChallenges.Count</span>
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="pills-tabContent">
+        <!-- Global Challenges Tab -->
+        <div class="tab-pane fade show active" id="pills-public" role="tabpanel">
+            <div class="row g-4">
+                @if (!publicChallenges.Any())
+                {
+                    <div class="col-12 text-center py-5">
+                        <div class="opacity-25 mb-3"><i class="fas fa-earth-americas fa-4x"></i></div>
+                        <h4 class="text-muted">No global challenges found.</h4>
+                        <p class="text-muted small">Be the first to create a public quest for the community!</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var challenge in publicChallenges)
+                    {
+                        <div class="col-xl-4 col-md-6">
+                            @await Html.PartialAsync("_ChallengeCard", challenge)
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Personal Challenges Tab -->
+        <div class="tab-pane fade" id="pills-private" role="tabpanel">
+            <div class="row g-4">
+                @if (!privateChallenges.Any())
+                {
+                    <div class="col-12 text-center py-5">
+                        <div class="opacity-25 mb-3"><i class="fas fa-user-shield fa-4x"></i></div>
+                        <h4 class="text-muted">No personal quests yet.</h4>
+                        <p class="text-muted small">Create a private challenge to track your individual goals.</p>
+                        <a asp-action="Create" class="btn btn-outline-primary rounded-pill mt-3">Start a Private Quest</a>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var challenge in privateChallenges)
+                    {
+                        <div class="col-xl-4 col-md-6">
+                            @await Html.PartialAsync("_ChallengeCard", challenge)
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .nav-pills .nav-link { color: #6c757d; transition: all 0.3s ease; }
+    .nav-pills .nav-link.active { background-color: #0d6efd; color: white; box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2); }
+    .rounded-4 { border-radius: 1rem !important; }
+</style>

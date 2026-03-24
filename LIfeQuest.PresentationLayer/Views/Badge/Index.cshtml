@@ -1,80 +1,76 @@
 @model IEnumerable<LifeQuest.BLL.DTOs.BadgeDTO>
 @{
-    ViewData["Title"] = "Achievements";
-    var userBadgeIds = ViewBag.UserBadgeIds as List<int> ?? new List<int>();
+    ViewData["Title"] = "Manage Badges";
 }
 
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <h1 class="fw-bold mb-2">Honors & Achievements</h1>
-        <p class="text-muted">Explore the milestones you've unlocked on your journey.</p>
+<div class="container py-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">Badge Library</h1>
+            <p class="text-muted small">Design and manage the honors users can earn.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="fas fa-medal me-2"></i> Create New Badge
+        </a>
     </div>
 
-    <div class="row g-4">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var badge in Model)
-            {
-                bool isEarned = userBadgeIds.Contains(badge.Id);
-                <div class="col-md-4 col-lg-3">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4 @(isEarned ? "badge-earned" : "badge-locked")">
-                        <div class="badge-icon-container mb-3 mx-auto @(isEarned ? "bg-warning bg-opacity-25" : "bg-light")">
-                            <i class="fas @(badge.Image ?? "fa-medal") @(isEarned ? "text-warning" : "text-muted opacity-50")"></i>
-                        </div>
-                        <h5 class="fw-bold mb-1">@badge.Name</h5>
-                        <p class="small text-muted mb-3">@badge.Description</p>
-                        
-                        @if (isEarned)
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3">Badge</th>
+                            <th class="py-3">Details</th>
+                            <th class="py-3 text-center">Reward</th>
+                            <th class="py-3">Requirements</th>
+                            <th class="text-end pe-4 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
                         {
-                            <span class="badge bg-success rounded-pill px-3 py-2 mt-auto">
-                                <i class="fas fa-check-circle me-1"></i> Earned
-                            </span>
-                        }
-                        else
-                        {
-                            <div class="mt-auto">
-                                @if (!string.IsNullOrEmpty(badge.RequiredLevelName))
-                                {
-                                    <div class="small text-warning mb-2 fw-bold">
-                                        <i class="fas fa-lock-open me-1"></i> Level: @badge.RequiredLevelName
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                                            <i class="fas @(item.Image ?? "fa-medal") text-primary"></i>
+                                        </div>
+                                        <div class="fw-bold text-dark">@item.Name</div>
                                     </div>
-                                }
-                                <span class="badge bg-light text-muted rounded-pill px-3 py-2">
-                                    <i class="fas fa-lock me-1"></i> Locked
-                                </span>
-                            </div>
+                                </td>
+                                <td>
+                                    <div class="small text-muted" style="max-width: 250px;">@item.Description</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success bg-opacity-10 text-success border px-2">
+                                        +@item.Points pts
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="small fw-bold">
+                                        @if (item.CriteriaType == "Level") {
+                                            <i class="fas fa-layer-group text-info me-1"></i> @item.RequiredLevelName
+                                        } else {
+                                            <i class="fas fa-tasks text-warning me-1"></i> @item.CriteriaValue @item.CriteriaType
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary rounded-pill me-2">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger rounded-pill">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
                         }
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="col-12 text-center py-5">
-                <div class="opacity-25 mb-4">
-                    <i class="fas fa-award fa-5x"></i>
-                </div>
-                <h3>No achievements found.</h3>
-                <p class="text-muted">Start completing challenges to earn your first medal!</p>
+                    </tbody>
+                </table>
             </div>
-        }
+        </div>
     </div>
 </div>
-
-<style>
-    .badge-icon-container {
-        width: 80px;
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 2.5rem;
-        transition: transform 0.3s ease;
-    }
-    .badge-earned { border-top: 5px solid #ffc107 !important; }
-    .badge-locked { filter: grayscale(1); opacity: 0.7; }
-    .card { transition: all 0.3s ease; }
-    .card:hover { transform: translateY(-10px); }
-    .badge-earned:hover .badge-icon-container { transform: scale(1.1) rotate(5deg); }
-</style>

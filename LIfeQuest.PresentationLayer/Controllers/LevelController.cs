@@ -1,9 +1,11 @@
 using LifeQuest.BLL.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using LifeQuest.BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LifeQuest.PL.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class LevelController : Controller
     {
         private readonly ILevelService _levelService;

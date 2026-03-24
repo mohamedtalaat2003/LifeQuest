@@ -1,0 +1,66 @@
+@model IEnumerable<LifeQuest.BLL.DTOs.BadgeDTO>
+@{
+    ViewData["Title"] = "Achievements";
+    var userBadgeIds = ViewBag.UserBadgeIds as List<int> ?? new List<int>();
+}
+
+<div class="container py-5 text-white">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold mb-2 display-4" style="text-shadow: 0 0 20px rgba(0,255,255,0.5);">Honors & Achievements</h1>
+        <p class="text-muted-light lead">Explore the milestones you've unlocked on your journey.</p>
+    </div>
+
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var badge in Model)
+            {
+                bool isEarned = userBadgeIds.Contains(badge.Id);
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100 border-0 shadow-lg rounded-4 text-center p-4 @(isEarned ? "badge-earned bg-dark bg-opacity-50" : "badge-locked bg-secondary bg-opacity-10")">
+                        <div class="badge-icon-container mb-3 mx-auto @(isEarned ? "bg-warning bg-opacity-25" : "bg-dark bg-opacity-50")">
+                            <i class="fas @(badge.Image ?? "fa-medal") @(isEarned ? "text-warning" : "text-muted opacity-50")"></i>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-white">@badge.Name</h5>
+                        <p class="small text-muted mb-3">@badge.Description</p>
+                        
+                        @if (isEarned)
+                        {
+                            <span class="badge bg-success rounded-pill px-3 py-2 mt-auto">
+                                <i class="fas fa-check-circle me-1"></i> Earned
+                            </span>
+                        }
+                        else
+                        {
+                            <div class="mt-auto">
+                                <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                    <i class="fas fa-lock me-1"></i> Locked
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .text-muted-light { color: #bbbbbb; }
+    .badge-icon-container {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 2.5rem;
+        transition: transform 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.1);
+    }
+    .badge-earned { border-top: 5px solid #ffc107 !important; transform: scale(1.02); }
+    .badge-locked { filter: grayscale(1); opacity: 0.6; }
+    .card { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.05) !important; }
+    .card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.1) !important; }
+    .badge-earned:hover .badge-icon-container { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 20px rgba(255,193,7,0.3); }
+</style>

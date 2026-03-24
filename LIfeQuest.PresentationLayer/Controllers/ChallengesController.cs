@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace LifeQuest.PresentationLayer.Controllers
 {
+    [Authorize]
     public class ChallengesController : Controller
     {
         private readonly IChallengeService _challengeService;
@@ -26,7 +27,11 @@ namespace LifeQuest.PresentationLayer.Controllers
         // GET: Challenges
         public async Task<IActionResult> Index()
         {
-            var challenges = await _challengeService.GetAllChallengesAsync();
+            var userIdStr = _userManager.GetUserId(User);
+            int? userId = string.IsNullOrEmpty(userIdStr) ? null : int.Parse(userIdStr);
+            bool isAdmin = User.IsInRole("Admin");
+
+            var challenges = await _challengeService.GetAllChallengesAsync(userId, isAdmin);
             var viewModel = challenges.Select(c => new ChallengeViewModel
             {
                 Id = c.Id,
@@ -45,9 +50,9 @@ namespace LifeQuest.PresentationLayer.Controllers
         }
 
         // GET: Challenges/Create
-        public IActionResult Create()
+        public IActionResult Create(bool isPublic = false)
         {
-            return View(new CreateChallengeViewModel());
+            return View(new CreateChallengeViewModel { IsPublic = isPublic });
         }
 
         // POST: Challenges/Create
@@ -57,14 +62,20 @@ namespace LifeQuest.PresentationLayer.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool isPublic = viewModel.IsPublic;
+                if (isPublic && !User.IsInRole("Admin"))
+                {
+                    isPublic = false; // Silently downgrade, or could add an error
+                }
+
                 var dto = new ChallengeDTO
                 {
                     Title = viewModel.Title,
                     Description = viewModel.Description,
                     StartDate = viewModel.StartDate,
                     EndDate = viewModel.EndDate,
-                    Points = viewModel.Points,
-                    IsPublic = viewModel.IsPublic,
+                    Difficulty = viewModel.Difficulty,
+                    IsPublic = isPublic,
                     ApplicationUserId = int.Parse(_userManager.GetUserId(User) ?? "0")
                 };
 
@@ -105,11 +116,16 @@ namespace LifeQuest.PresentationLayer.Controllers
             return RedirectToAction(nameof(Details), new { id = id });
         }
 
-        [Route("Challenges/Daily-CheckIn")]
-        [Route("Challenges/DailyCheckIn")]
         public IActionResult DailyCheckIn()
         {
             return View();
+        }
+
+        private int GetUserId()
+        {
+            var userIdStr = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userIdStr)) return 0;
+            return int.Parse(userIdStr);
         }
     }
 }

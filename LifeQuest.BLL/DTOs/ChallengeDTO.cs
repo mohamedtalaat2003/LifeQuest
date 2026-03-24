@@ -1,4 +1,5 @@
 using System;
+using LifeQuest.DAL.Models;
 
 namespace LifeQuest.BLL.DTOs
 {
@@ -13,7 +14,7 @@ namespace LifeQuest.BLL.DTOs
         public int Points { get; set; }
         public int Duration { get; set; }
         public bool IsPublic { get; set; } = true;
-        public string Difficulty { get; set; } = "Medium";
+        public ChallengeDifficulty Difficulty { get; set; } = ChallengeDifficulty.Medium;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public int CategoryId { get; set; }
         public int ApplicationUserId { get; set; }

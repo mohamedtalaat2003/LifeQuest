@@ -15,6 +15,12 @@ namespace LifeQuest.DAL.Data.Seed
         {
             try 
             {
+                // 0. Hard Reset for Challenges (As requested: "امسح كل التحديات وهنبدأ من جديد")
+                context.DailyLogs.RemoveRange(context.DailyLogs);
+                context.UserChallenges.RemoveRange(context.UserChallenges);
+                context.Challenges.RemoveRange(context.Challenges);
+                await context.SaveChangesAsync();
+
                 // 1. Seed Test User
                 var heroUser = await userManager.FindByNameAsync("Hero");
                 if (heroUser == null)
@@ -28,9 +34,21 @@ namespace LifeQuest.DAL.Data.Seed
                         Country = "Egypt"
                     };
                     var result = await userManager.CreateAsync(heroUser, "Hero@123");
-                    if (!result.Succeeded)
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(heroUser, "Admin");
+                    }
+                    else
                     {
                         Console.WriteLine("USER SEEDING FAILED: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                    }
+                }
+                else
+                {
+                    // Ensure existing Hero is also an Admin
+                    if (!await userManager.IsInRoleAsync(heroUser, "Admin"))
+                    {
+                        await userManager.AddToRoleAsync(heroUser, "Admin");
                     }
                 }
                 int heroId = heroUser?.Id ?? 0;
@@ -58,14 +76,14 @@ namespace LifeQuest.DAL.Data.Seed
 
                 var seededBadges = new List<Badges>
                 {
-                    new Badges { Name = "First Step", Description = "Complete your first challenge", Points = 100, Image = "fa-shoe-prints", RequiredLevelId = noviceLevel?.Id, CriteriaType = "ChallengeCount", CriteriaValue = 1 },
-                    new Badges { Name = "Explorer", Description = "Join 3 different challenges", Points = 150, Image = "fa-compass", RequiredLevelId = noviceLevel?.Id, CriteriaType = "ChallengeCount", CriteriaValue = 3 },
-                    new Badges { Name = "Apprentice Rising", Description = "Reach Apprentice level", Points = 300, Image = "fa-graduation-cap", RequiredLevelId = apprenticeLevel?.Id, CriteriaType = "Level", CriteriaValue = 0 },
-                    new Badges { Name = "Consistency King", Description = "Log activities for 7 consecutive days", Points = 500, Image = "fa-crown", RequiredLevelId = apprenticeLevel?.Id, CriteriaType = "Streak", CriteriaValue = 7 },
-                    new Badges { Name = "Warrior Spirit", Description = "Reach Warrior level", Points = 800, Image = "fa-shield-halved", RequiredLevelId = warriorLevel?.Id, CriteriaType = "Level", CriteriaValue = 0 },
-                    new Badges { Name = "Quest Master", Description = "Complete 10 challenges", Points = 1000, Image = "fa-trophy", RequiredLevelId = warriorLevel?.Id, CriteriaType = "ChallengeCount", CriteriaValue = 10 },
-                    new Badges { Name = "Living Legend", Description = "Reach Legend level", Points = 2000, Image = "fa-dragon", RequiredLevelId = legendLevel?.Id, CriteriaType = "Level", CriteriaValue = 0 },
-                    new Badges { Name = "Unstoppable", Description = "Complete 20 challenges", Points = 3000, Image = "fa-fire-flame-curved", RequiredLevelId = legendLevel?.Id, CriteriaType = "ChallengeCount", CriteriaValue = 20 }
+                    new Badges { Name = "First Step", Description = "Complete your first challenge", Points = 100, Image = "fa-shoe-prints", RequiredLevelId = noviceLevel?.Id, CriteriaType = BadgeCriteriaType.ChallengeCount, CriteriaValue = 1 },
+                    new Badges { Name = "Explorer", Description = "Join 3 different challenges", Points = 150, Image = "fa-compass", RequiredLevelId = noviceLevel?.Id, CriteriaType = BadgeCriteriaType.ChallengeCount, CriteriaValue = 3 },
+                    new Badges { Name = "Apprentice Rising", Description = "Reach Apprentice level", Points = 300, Image = "fa-graduation-cap", RequiredLevelId = apprenticeLevel?.Id, CriteriaType = BadgeCriteriaType.Level, CriteriaValue = 0 },
+                    new Badges { Name = "Consistency King", Description = "Log activities for 7 consecutive days", Points = 500, Image = "fa-crown", RequiredLevelId = apprenticeLevel?.Id, CriteriaType = BadgeCriteriaType.Streak, CriteriaValue = 7 },
+                    new Badges { Name = "Warrior Spirit", Description = "Reach Warrior level", Points = 800, Image = "fa-shield-halved", RequiredLevelId = warriorLevel?.Id, CriteriaType = BadgeCriteriaType.Level, CriteriaValue = 0 },
+                    new Badges { Name = "Quest Master", Description = "Complete 10 challenges", Points = 1000, Image = "fa-trophy", RequiredLevelId = warriorLevel?.Id, CriteriaType = BadgeCriteriaType.ChallengeCount, CriteriaValue = 10 },
+                    new Badges { Name = "Living Legend", Description = "Reach Legend level", Points = 2000, Image = "fa-dragon", RequiredLevelId = legendLevel?.Id, CriteriaType = BadgeCriteriaType.Level, CriteriaValue = 0 },
+                    new Badges { Name = "Unstoppable", Description = "Complete 20 challenges", Points = 3000, Image = "fa-fire-flame-curved", RequiredLevelId = legendLevel?.Id, CriteriaType = BadgeCriteriaType.ChallengeCount, CriteriaValue = 20 }
                 };
 
                 foreach (var badge in seededBadges)
@@ -106,7 +124,7 @@ namespace LifeQuest.DAL.Data.Seed
                             { 
                                 Title = "5K Run", 
                                 Description = "Run a total of 5 kilometers to boost your cardio.", 
-                                Difficulty = "Medium", 
+                                Difficulty = ChallengeDifficulty.Medium, 
                                 Duration = 300, 
                                 Points = 200,
                                 CategoryId = healthCategory?.Id ?? (await context.Categories.FirstAsync()).Id,
@@ -119,7 +137,7 @@ namespace LifeQuest.DAL.Data.Seed
                             { 
                                 Title = "Read 20 Pages", 
                                 Description = "Read 20 pages of any educational book every day.", 
-                                Difficulty = "Easy", 
+                                Difficulty = ChallengeDifficulty.Easy, 
                                 Duration = 300, 
                                 Points = 150,
                                 CategoryId = learningCategory?.Id ?? (await context.Categories.FirstAsync()).Id,

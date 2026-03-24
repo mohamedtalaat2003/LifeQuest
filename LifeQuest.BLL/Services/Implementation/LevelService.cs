@@ -45,7 +45,7 @@ namespace LifeQuest.BLL.Services.Implementation
         {
             // هعدل الداتا بتاعة ال Level اللى جايلى
             var level = _mapper.Map<Level>(dto);
-            _unitOfWork.Repository<Level>().Update(level);
+            await _unitOfWork.Repository<Level>().Update(level);
             return await _unitOfWork.CompleteAsync() > 0;
         }
 

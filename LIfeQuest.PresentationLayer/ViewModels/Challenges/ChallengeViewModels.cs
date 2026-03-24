@@ -14,7 +14,7 @@ namespace LifeQuest.PresentationLayer.ViewModels.Challenges
         public int Points { get; set; }
         public int Duration { get; set; }
         public bool IsPublic { get; set; }
-        public string Difficulty { get; set; } = string.Empty;
+        public LifeQuest.DAL.Models.ChallengeDifficulty Difficulty { get; set; } = LifeQuest.DAL.Models.ChallengeDifficulty.Medium;
         public DateTime CreatedAt { get; set; }
     }
 
@@ -37,12 +37,8 @@ namespace LifeQuest.PresentationLayer.ViewModels.Challenges
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; } = DateTime.Now.AddDays(30);
 
-        [Required(ErrorMessage = "Points are required")]
-        [Range(1, 1000, ErrorMessage = "Points must be between 1 and 1000")]
-        public int Points { get; set; } = 100;
-
         [Display(Name = "Challenge Difficulty")]
-        public string Difficulty { get; set; } = "Medium";
+        public LifeQuest.DAL.Models.ChallengeDifficulty Difficulty { get; set; } = LifeQuest.DAL.Models.ChallengeDifficulty.Medium;
 
         [Display(Name = "Make Public?")]
         public bool IsPublic { get; set; } = true;

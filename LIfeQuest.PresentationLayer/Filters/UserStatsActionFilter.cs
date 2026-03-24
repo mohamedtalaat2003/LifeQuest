@@ -30,7 +30,7 @@ namespace LifeQuest.PL.Filters
                             if (controller != null)
                             {
                                 controller.ViewData["UserPoints"] = profile.TotalPoints.ToString();
-                                controller.ViewData["UserLevel"] = $"{profile.LevelNumber - 1} - {profile.LevelName}";
+                                controller.ViewData["UserLevel"] = $"Level {profile.LevelNumber}: {profile.LevelName}";
                                 controller.ViewData["ProfilePicture"] = profile.ProfilePictureUrl;
                             }
                         }

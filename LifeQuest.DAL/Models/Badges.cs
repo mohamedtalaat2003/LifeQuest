@@ -20,8 +20,7 @@ namespace LifeQuest.DAL.Models
         public int? RequiredLevelId { get; set; }
         public Level? RequiredLevel { get; set; }
 
-        // Criteria type: "Level", "ChallengeCount", "Streak"
-        public string CriteriaType { get; set; } = "Level";
+        public BadgeCriteriaType CriteriaType { get; set; } = BadgeCriteriaType.Level;
 
         // The count needed for ChallengeCount or Streak criteria
         public int CriteriaValue { get; set; }

@@ -61,7 +61,7 @@ namespace LifeQuest.BLL.Services.Implementation
         {
             // تحديث بيانات الوسام
             var badge = _mapper.Map<Badges>(dto);
-            _unitOfWork.Repository<Badges>().Update(badge);
+            await _unitOfWork.Repository<Badges>().Update(badge);
             await _unitOfWork.CompleteAsync();
         }
     }

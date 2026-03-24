@@ -32,8 +32,8 @@ namespace LifeQuest.DAL.Models
         [Required]
         public bool IsPublic { get; set; }
 
-        [RegularExpression("^(Easy|Medium|Hard)$")]
-        public string Difficulty { get; set; } = string.Empty;
+        [Required]
+        public ChallengeDifficulty Difficulty { get; set; } = ChallengeDifficulty.Medium;
 
         [ForeignKey("ApplicationUser")]
         public int ApplicationUserId { get; set; }
