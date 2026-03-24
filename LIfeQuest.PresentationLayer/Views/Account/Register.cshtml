@@ -5,73 +5,77 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="text-center mb-4">
-    <h4 class="fw-bold mb-1">Create Account</h4>
-    <p class="text-muted small">Start your journey and transform your habits today.</p>
+<div class="mb-4">
+    <h2 class="fw-bold text-dark mb-1">Create Account</h2>
+    <p class="text-muted">Join Life Quest and start your journey.</p>
 </div>
 
-<div asp-validation-summary="All" class="text-danger mb-2"></div>
+<div asp-validation-summary="All" class="text-danger mb-4 small fw-bold"></div>
 
 <form asp-action="Register" asp-controller="Account" method="post" class="auth-form">
     @Html.AntiForgeryToken()
 
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label small fw-bold text-muted">Full Name</label>
-        <input asp-for="Name" class="form-control" placeholder="John Doe">
-        <span asp-validation-for="Name" class="text-danger small"></span>
+    <div class="row g-3 mb-3">
+        <div class="col-12">
+            <label asp-for="Name" class="form-label small fw-bold text-secondary">Full Name</label>
+            <input asp-for="Name" class="form-control bg-light" placeholder="Full Name">
+            <span asp-validation-for="Name" class="text-danger small"></span>
+        </div>
     </div>
 
     <div class="mb-3">
-        <label asp-for="UserName" class="form-label small fw-bold text-muted">User Name</label>
-        <input asp-for="UserName" class="form-control" placeholder="johndoe123">
+        <label asp-for="UserName" class="form-label small fw-bold text-secondary">Username</label>
+        <input asp-for="UserName" class="form-control bg-light" placeholder="Username">
         <span asp-validation-for="UserName" class="text-danger small"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Email" class="form-label small fw-bold text-muted">Email Address</label>
-        <input asp-for="Email" class="form-control" placeholder="name@example.com">
+        <label asp-for="Email" class="form-label small fw-bold text-secondary">Email Address</label>
+        <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
+            <input asp-for="Email" class="form-control bg-light border-start-0 ps-0" placeholder="name@example.com">
+        </div>
         <span asp-validation-for="Email" class="text-danger small"></span>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="PlainPassword" class="form-label small fw-bold text-muted">Password</label>
-        <input asp-for="PlainPassword" type="password" class="form-control" placeholder="At least 8 characters">
-        <span asp-validation-for="PlainPassword" class="text-danger small"></span>
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <label asp-for="PlainPassword" class="form-label small fw-bold text-secondary">Password</label>
+            <input asp-for="PlainPassword" type="password" class="form-control bg-light" placeholder="••••••••">
+            <span asp-validation-for="PlainPassword" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="ConfirmPassword" class="form-label small fw-bold text-secondary">Confirm</label>
+            <input asp-for="ConfirmPassword" type="password" class="form-control bg-light" placeholder="••••••••">
+            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="ConfirmPassword" class="form-label small fw-bold text-muted">Confirm Password</label>
-        <input asp-for="ConfirmPassword" type="password" class="form-control">
-        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Country" class="form-label small fw-bold text-muted">Country</label>
-        <select asp-for="Country" asp-items="Model.Countries" class="form-control">
+    <div class="mb-4">
+        <label asp-for="Country" class="form-label small fw-bold text-secondary">Country</label>
+        <select asp-for="Country" asp-items="Model.Countries" class="form-select bg-light">
             <option value="">-- Select Country --</option>
         </select>
         <span asp-validation-for="Country" class="text-danger small"></span>
     </div>
 
     <div class="mb-4">
-        <p class="xsmall text-muted">
-            By clicking Register, you agree to our
-            <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+        <p class="small text-muted mb-0">
+            By registering, you agree to our 
+            <a href="#" class="text-primary text-decoration-none fw-bold">Terms</a> and 
+            <a href="#" class="text-primary text-decoration-none fw-bold">Privacy</a>.
         </p>
     </div>
 
     <div class="d-grid mb-4">
-        <button type="submit" class="btn btn-primary btn-lg shadow-sm fw-bold">
-            Register
-        </button>
+        <button type="submit" class="btn btn-primary btn-lg py-3 shadow-sm fw-bold">Sign Up</button>
     </div>
 
-    <div class="text-center">
-        <p class="small text-muted mb-0">
-            Already have an account?
-            <a asp-action="Login" asp-controller="Account" class="fw-bold text-decoration-none">Sign In</a>
-        </p>
+    <div class="text-center mt-4">
+        <p class="text-muted small mb-0">Already have an account? <a asp-action="Login" asp-controller="Account" class="text-primary fw-bold text-decoration-none">Sign In</a></p>
     </div>
 </form>
+
+
 
 </html>

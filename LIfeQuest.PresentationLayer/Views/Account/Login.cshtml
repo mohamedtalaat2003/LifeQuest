@@ -5,69 +5,72 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="text-center mb-4">
-    <h4 class="fw-bold mb-1">Welcome Back!</h4>
-    <p class="text-muted small">Please enter your credentials to continue your quest.</p>
+<div class="mb-4">
+    <h2 class="fw-bold text-dark mb-1">Sign In</h2>
+    <p class="text-muted">Welcome back! Please enter your details.</p>
 </div>
 
-<div asp-validation-summary="All" class="text-danger mb-2"></div>
+<div asp-validation-summary="All" class="text-danger mb-4 small fw-bold"></div>
 
 <form asp-action="Login" asp-controller="Account" method="post" class="auth-form">
     @Html.AntiForgeryToken()
 
     <div class="mb-3">
-        <label asp-for="UserName" class="form-label small fw-bold text-muted">Username</label>
-        <input asp-for="UserName" class="form-control" placeholder="Enter your username" />
+        <label asp-for="UserName" class="form-label small fw-bold text-secondary">Username</label>
+        <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
+            <input asp-for="UserName" class="form-control bg-light border-start-0 ps-0" placeholder="Username" />
+        </div>
         <span asp-validation-for="UserName" class="text-danger small"></span>
     </div>
+
     <div class="mb-3">
         <div class="d-flex justify-content-between">
-            <label asp-for="PlainPassword" class="form-label small fw-bold text-muted">Password</label>
-            <a asp-action="ForgotPassword" asp-controller="Account" class="small text-decoration-none">Forgot?</a>
+            <label asp-for="PlainPassword" class="form-label small fw-bold text-secondary">Password</label>
+            <a asp-action="ForgotPassword" asp-controller="Account" class="small text-primary fw-bold text-decoration-none">Forgot?</a>
         </div>
-        <input asp-for="PlainPassword" type="password" class="form-control" placeholder="••••••••" />
+        <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+            <input asp-for="PlainPassword" type="password" class="form-control bg-light border-start-0 ps-0" placeholder="••••••••" />
+        </div>
         <span asp-validation-for="PlainPassword" class="text-danger small"></span>
     </div>
-    <div class="mb-4 form-check">
-        <input asp-for="RememberMe" class="form-check-input" />
-        <label asp-for="RememberMe" class="form-check-label small text-muted">Remember me on this device</label>
+
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <div class="form-check">
+            <input asp-for="RememberMe" class="form-check-input" />
+            <label asp-for="RememberMe" class="form-check-label small text-muted">Remember me</label>
+        </div>
     </div>
+
     <div class="d-grid mb-4">
-        <button type="submit" class="btn btn-primary btn-lg shadow-sm fw-bold">Sign In</button>
+        <button type="submit" class="btn btn-primary btn-lg py-3 shadow-sm fw-bold">Sign In</button>
     </div>
 
-    <div class="text-center mb-4 position-relative">
-        <hr class="my-0">
-        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted">Or continue with</span>
-    </div>
-
-    <div class="text-center">
-        <p class="small text-muted mb-0">Don't have an account? <a asp-action="Register" asp-controller="Account" class="fw-bold text-decoration-none">Register</a></p>
+    <div class="divider mb-4">
+        <span class="px-3 small text-muted text-uppercase fw-bold bg-white position-relative z-index-1" style="font-size: 0.65rem; letter-spacing: 1px;">Or continue with</span>
+        <div class="position-absolute top-50 start-0 w-100 border-bottom"></div>
     </div>
 </form>
 
-<form asp-action="ExternalLogin" asp-controller="Account" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="mt-4">
-    @Html.AntiForgeryToken()
-    <div class="row g-2 mb-4">
-        <div class="col-6">
-            <button type="submit" name="provider" value="Google" class="social-auth-btn" title="Log in using your Google account">
+<div class="row g-2 mb-4">
+    <div class="col-6">
+        <form asp-action="ExternalLogin" asp-controller="Account" asp-route-provider="Google" method="post">
+            <button type="submit" class="social-auth-btn w-100" title="Log in using Google">
                 <i class="fab fa-google me-2 text-danger"></i> Google
             </button>
-        </div>
-        <div class="col-6">
-            <button type="submit" name="provider" value="GitHub" class="social-auth-btn" title="Log in using your GitHub account">
+        </form>
+    </div>
+    <div class="col-6">
+        <form asp-action="ExternalLogin" asp-controller="Account" asp-route-provider="GitHub" method="post">
+            <button type="submit" class="social-auth-btn w-100" title="Log in using GitHub">
                 <i class="fab fa-github me-2 text-dark"></i> GitHub
             </button>
-        </div>
-        <div class="col-6">
-            <button type="submit" name="provider" value="Facebook" class="social-auth-btn" title="Log in using your Facebook account">
-                <i class="fab fa-facebook me-2 text-primary"></i> Facebook
-            </button>
-        </div>
-        <div class="col-6">
-            <button type="submit" name="provider" value="LinkedIn" class="social-auth-btn" title="Log in using your LinkedIn account">
-                <i class="fab fa-linkedin me-2 text-info"></i> LinkedIn
-            </button>
-        </div>
+        </form>
     </div>
-</form>
+</div>
+
+<div class="text-center mt-5">
+    <p class="text-muted small mb-0">No account? <a asp-action="Register" asp-controller="Account" class="text-primary fw-bold text-decoration-none">Join the Quest</a></p>
+</div>
+

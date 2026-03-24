@@ -8,24 +8,24 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-                <div class="bg-primary bg-gradient p-5 text-white position-relative">
-                    <div class="position-absolute top-0 end-0 p-4 opacity-25">
+                <div class="hero-gradient p-5 text-white position-relative">
+                    <div class="position-absolute top-0 end-0 p-4 opacity-10">
                         <i class="fas fa-rocket fa-6x"></i>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-lg bg-white rounded-circle p-1 me-4 shadow d-flex align-items-center justify-content-center overflow-hidden">
+                    <div class="d-flex align-items-center position-relative">
+                        <div class="avatar-lg bg-white bg-opacity-10 rounded-4 p-1 me-4 shadow-lg d-flex align-items-center justify-content-center overflow-hidden" style="backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);">
                             @if (!string.IsNullOrEmpty(Model?.ProfilePictureUrl))
                             {
-                                <img src="@Model.ProfilePictureUrl" class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Avatar">
+                                <img src="@Model.ProfilePictureUrl" class="rounded-4 w-100 h-100" style="object-fit: cover;" alt="Avatar">
                             }
                             else
                             {
-                                <img src="https://ui-avatars.com/api/?name=@(Model?.UserName ?? "User")&background=random" class="rounded-circle w-100 h-100" style="object-fit: contain;" alt="Avatar">
+                                <img src="https://ui-avatars.com/api/?name=@(Model?.UserName ?? "User")&background=random" class="rounded-4 w-100 h-100" style="object-fit: contain;" alt="Avatar">
                             }
                         </div>
                         <div>
-                            <h2 class="fw-bold mb-1">Welcome back, @(Model?.UserName ?? "Hero")!</h2>
-                            <p class="mb-0 opacity-75">Your daily quest awaits. Let's make today count.</p>
+                            <h2 class="fw-bold mb-2">Welcome back, @(Model?.UserName ?? "Hero")!</h2>
+                            <p class="mb-0 opacity-80 fs-5">Your daily quest awaits. Let's make today count.</p>
                         </div>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
                 <div class="stats-icon bg-primary bg-opacity-10 text-primary mb-3 mx-auto">
                     <i class="fas fa-crown"></i>
                 </div>
-                <h6 class="text-muted small text-uppercase fw-bold mb-1">Rank Status</h6>
+                <h6 class="text-secondary small text-uppercase fw-bold mb-1">Rank Status</h6>
                 <h3 class="fw-bold mb-0 text-primary">Level @(Model?.LevelNumber ?? 1)</h3>
                 <p class="text-muted small mb-0 fw-bold">@(Model?.LevelName ?? "Novice")</p>
             </div>
@@ -50,7 +50,7 @@
                 <div class="stats-icon bg-success bg-opacity-10 text-success mb-3 mx-auto">
                     <i class="fas fa-star"></i>
                 </div>
-                <h6 class="text-muted small text-uppercase fw-bold mb-1">Total Points</h6>
+                <h6 class="text-secondary small text-uppercase fw-bold mb-1">Total Points</h6>
                 <h3 class="fw-bold mb-0">@(Model?.TotalPoints ?? 0)</h3>
             </div>
         </div>
@@ -59,7 +59,7 @@
                 <div class="stats-icon bg-warning bg-opacity-10 text-warning mb-3 mx-auto">
                     <i class="fas fa-fire"></i>
                 </div>
-                <h6 class="text-muted small text-uppercase fw-bold mb-1">Success Rate</h6>
+                <h6 class="text-secondary small text-uppercase fw-bold mb-1">Success Rate</h6>
                 <h3 class="fw-bold mb-0">@(Model?.SuccessRate ?? 0)%</h3>
             </div>
         </div>
@@ -68,7 +68,7 @@
                 <div class="stats-icon bg-info bg-opacity-10 text-info mb-3 mx-auto">
                     <i class="fas fa-medal"></i>
                 </div>
-                <h6 class="text-muted small text-uppercase fw-bold mb-1">Badges</h6>
+                <h6 class="text-secondary small text-uppercase fw-bold mb-1">Badges</h6>
                 <h3 class="fw-bold mb-0">@(Model?.TotalBadges ?? 0)</h3>
             </div>
         </div>
@@ -85,11 +85,11 @@
                 <div class="card-body p-4">
                     @if (Model?.ActiveChallenges > 0)
                     {
-                        <div class="alert alert-info border-0 rounded-4 p-4">
+                        <div class="alert alert-info border-0 rounded-4 p-4 bg-primary bg-opacity-5">
                             <div class="d-flex">
-                                <i class="fas fa-info-circle fs-4 me-3 mt-1"></i>
+                                <i class="fas fa-info-circle fs-4 me-3 mt-1 text-primary"></i>
                                 <div>
-                                    <h6 class="fw-bold mb-1">You have @Model.ActiveChallenges active challenges!</h6>
+                                    <h6 class="fw-bold mb-1 text-primary">You have @Model.ActiveChallenges active challenges!</h6>
                                     <p class="small mb-0 opacity-75">Click below to track your progress and log today's activities.</p>
                                     <a asp-controller="DailyLog" asp-action="Index" class="btn btn-primary btn-sm mt-3 px-4 shadow-sm">Go to Daily Log</a>
                                 </div>
@@ -161,17 +161,3 @@
     </div>
 </div>
 
-<style>
-    .avatar-lg { width: 100px; height: 100px; }
-    .stats-icon {
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        font-size: 1.5rem;
-    }
-    .card { transition: transform 0.2s ease; }
-    .card:hover { transform: translateY(-5px); }
-</style>
